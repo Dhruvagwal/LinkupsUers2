@@ -1,4 +1,5 @@
 import instances from '../data/axios'
+import countryCode from 'data/countryCode'
 
 import { AsyncStorage } from 'react-native'
 
@@ -8,34 +9,34 @@ const STORAGE_KEY_3 = 'LINKUPS_USER_PHONE_NUMBER'
 
 const signInWithPhoneNumber = async (phone)=>{
 
-    const CODE = '+91'
-
+    const CODE = await countryCode()
+    const TRIM_CODE = CODE.replace('+','')
+    
     const otpData = {
-      phone : '91'+phone,
+      phone : TRIM_CODE+phone,
       countryCode: CODE
     }
 
-    const result = await instances.post('/requestOneTimePassword', otpData).then(()=>true).catch(()=>false)
+    return instances.post('/requestOneTimePassword', otpData).then(()=>true).catch(()=>false)
 
-    return result
 }
 
 const confirmOTP = async (phone, code)=>{
-  const CODE = "91"
+  const CODE = await countryCode()
+  const TRIM_CODE = CODE.replace('+','')
 
   const data = {
-    phone: CODE + phone,
+    phone: TRIM_CODE + phone,
     code
   }
   const result = await instances.post('/verifyOneTimePassword', data).then(async (response)=>{
 
     await AsyncStorage.setItem(STORAGE_KEY_2, response.data.REFRESH_TOKEN)
     await AsyncStorage.setItem(STORAGE_KEY_1, response.data.ACCESS_TOKEN)
-    await AsyncStorage.setItem(STORAGE_KEY_3, CODE+phone)
+    await AsyncStorage.setItem(STORAGE_KEY_3, TRIM_CODE+phone)
 
     return true
   }).catch((err)=>{
-    console.log(err)
     return false
   })
 
@@ -44,14 +45,15 @@ const confirmOTP = async (phone, code)=>{
 
 const signUpWithPhoneNumber = async (phone)=>{
 
-    const CODE = "+91"
+    const CODE = await countryCode()
+    const TRIM_CODE = CODE.replace('+','')
 
     const data = {
-      phone: CODE + phone
+      phone: TRIM_CODE + phone
     }
 
     const otpData = {
-      phone : '91'+phone,
+      phone : TRIM_CODE+phone,
       countryCode: CODE
     }
     
@@ -83,10 +85,12 @@ const Logout =async()=>{
 }
 
 const createUser = async (phone, name)=>{
+  const CODE = await countryCode()
+  const TRIM_CODE = CODE.replace('+','')
+
   return await instances.post('/DBcreate/api/account/create',{
-    id:'91'+phone,
-    AccountHolderName: name,
-    isSeller: true,
+    id:TRIM_CODE+phone,
+    name,
     createdOn: new Date()
   }).then(()=>true).catch(()=>false)
 }

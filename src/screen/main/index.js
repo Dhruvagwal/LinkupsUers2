@@ -9,6 +9,7 @@ import Login from './Login'
 import ServiceListView from 'components/ServiceListView' 
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
+import {AuthConsumer} from 'context/auth'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -40,20 +41,22 @@ const MenuModal = ({setMenu, visible})=>{
                             <Text>{'  '}Language</Text>
                         </RowView>
                     </Pressable>
-                    <RowView style={styles.menuItems}>
-                        <AntDesign name="setting" size={24} color={color.inActive}/>
-                        <Text>{'  '}Setting</Text>
-                    </RowView>
+                    <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.Setting)}>
+                        <RowView style={styles.menuItems}>
+                            <AntDesign name="setting" size={24} color={color.inActive}/>
+                            <Text>{'  '}Setting</Text>
+                        </RowView>
+                    </Pressable>
                 </View>
             </Pressable>
         </Modal>
 )}
 
 const Index = () => {
+    const {state:{auth}} = AuthConsumer()
     const ServiceStatus = ['Service', 'Products'] 
     const [active, setActive] = useState(ServiceStatus[0])
     const [loading, setLoading] = useState(false)
-    const [auth, setAuth] = useState(true)
     const [menu, setMenu] = useState(false)
     useEffect(() => {
         setLoading(true)
@@ -63,12 +66,12 @@ const Index = () => {
         return ()=>clearInterval(intervalId)
     }, [active])
 
-    const order = ()=>{
-        setAuth(auth)
-        RootNavigation.navigate(CONSTANT.AddOrder)
+    const order = async ()=>{
+        auth && RootNavigation.navigate(CONSTANT.AddOrder)
     }
     return (
-        <Pressable style={{flex:1}}>
+        <View style={{flex:1}}>
+            {!auth && <Login/>}
             <Background/>
             {/* ======================= */}
             <View style={{height:HEIGHT*.05}}/>
@@ -108,10 +111,9 @@ const Index = () => {
                             <Loading/>
                     </View>
                     :
-                        [1,2,3].map(item=><ServiceListView status={active} key={item}/>)
+                        [].map(item=><ServiceListView status={active} key={item}/>)
                     }
                 </ScrollView>
-                {!auth && <Login/>}
                 </View>
             {/* ======================= */}
             {
@@ -122,7 +124,7 @@ const Index = () => {
 
             }
             {/* ======================= */}
-        </Pressable>
+        </View>
     )
 }
 
