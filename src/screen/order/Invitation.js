@@ -25,9 +25,9 @@ const InvitationService = ({pressed, setPressed})=><RowView style={styles.contai
         </RowView>
         {
             !pressed ? <Pressable onPress={()=>setPressed(true)} style={{backgroundColor:color.active, padding:5, borderRadius:10, alignItems:'center'}}>
-                <Text bold>Send Invite</Text>
+                <Text regular>Send Invite</Text>
             </Pressable> : <Pressable onPress={()=>setPressed(false)} style={{backgroundColor:color.red, padding:5, borderRadius:10, alignItems:'center'}}>
-                <Text bold>Cancel</Text>
+                <Text regular>Cancel</Text>
             </Pressable>
         }
     </View>

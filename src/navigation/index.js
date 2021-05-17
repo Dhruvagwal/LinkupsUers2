@@ -12,12 +12,21 @@ import InvitationScreen from 'screen/order/Invitation'
 import ServiceProfileScreen from 'screen/profile/ServiceProfile'
 
 import {navigationRef} from './RootNavigation';
+import {AuthConsumer} from '../context/auth'
+import { verifyToken } from '../hooks/useAuth'
 
 import color from 'colors'
 
 const Index = () => {
     const Stack = createStackNavigator()
-    const [Loading, setLoading] = useState(false)
+    const [Loading, setLoading] = useState(true)
+    const {state, setAuth} = AuthConsumer()
+
+    useEffect(()=>{
+      verifyToken()
+        .then(response=>{setAuth(response); setLoading(false)})
+        .catch(err=>setAuth(false))
+    },[])
 
     const BlackTheme = {
         dark: true,

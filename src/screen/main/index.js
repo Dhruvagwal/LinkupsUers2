@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useRef} from 'react'
 import { StyleSheet, Image, View ,Dimensions, Pressable, ScrollView, FlatList, Animated, Modal, Switch } from 'react-native'
-import { MaterialCommunityIcons, MaterialIcons, Entypo, AntDesign } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, MaterialIcons, Entypo, AntDesign, Ionicons } from '@expo/vector-icons'; 
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
@@ -50,7 +50,7 @@ const MenuModal = ({setMenu, visible})=>{
 )}
 
 const Index = () => {
-    const ServiceStatus = ['Posted', 'Processing', 'Completed'] 
+    const ServiceStatus = ['Service', 'Products'] 
     const [active, setActive] = useState(ServiceStatus[0])
     const [loading, setLoading] = useState(false)
     const [auth, setAuth] = useState(true)
@@ -79,9 +79,14 @@ const Index = () => {
                         <Text size={30} bold>Linkups</Text>
                         <Text>Home</Text>
                     </View>
-                    <Pressable style={{position:'absolute', right:-30, padding: 20,}} onPress={()=>setMenu(!menu)}>
-                        <MaterialCommunityIcons name="dots-vertical" size={40} color={menu ?color.active :color.white}/>
-                    </Pressable>
+                    <RowView>
+                        <Pressable style={{padding:5}}>
+                            <Ionicons name="filter-outline" size={30} color={color.white} />
+                        </Pressable>
+                        <Pressable style={{padding:5}} onPress={()=>setMenu(!menu)}>
+                            <MaterialCommunityIcons name="dots-vertical" size={30} color={menu ?color.active :color.white}/>
+                        </Pressable>
+                    </RowView>
                 </RowView>
                 <MenuModal visible={menu} setMenu={setMenu}/>
                 {/* ====================== */}
