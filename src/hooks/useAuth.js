@@ -84,13 +84,14 @@ const Logout =async()=>{
   await AsyncStorage.clear()
 }
 
-const createUser = async (phone, name)=>{
+const createUser = async (phone, name, Address)=>{
   const CODE = await countryCode()
   const TRIM_CODE = CODE.replace('+','')
 
-  return await instances.post('/DBcreate/api/account/create',{
+  return await instances.post('/DBcreate/api/users/create',{
     id:TRIM_CODE+phone,
     name,
+    Address,
     createdOn: new Date()
   }).then(()=>true).catch(()=>false)
 }
