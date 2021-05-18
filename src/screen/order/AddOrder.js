@@ -1,4 +1,4 @@
-import React, {Children, useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import { StyleSheet, View, Dimensions, ScrollView, Image, Pressable, TextInput} from 'react-native'
 import { MaterialIcons, Entypo, AntDesign, Feather } from '@expo/vector-icons';
 
@@ -7,8 +7,10 @@ import ImagePicker from 'components/ImagePicker'
 import {Text, RowView} from 'styles'
 import color from 'colors'
 import ScreenModal from 'components/ScreenModal'
+import Loading from 'components/Loading'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
+import {getCategory} from 'hooks/useData'
 
 
 const HEIGHT = Dimensions.get('screen').height
@@ -21,22 +23,22 @@ const Background = ()=>{
     </View>
 }
 
-const ScreenAddCategoryModal = ({visible, setCategory, text, call})=>{
-    const ImageURI =['https://www.tws.edu/wp-content/uploads/2017/08/electrician-job-skills-1616x674.jpg','https://www.capecodapplianceservice.com/wp-content/uploads/2016/11/home-appliance-repair.jpg']
+const ScreenAddCategoryModal = ({visible, setCategory, text, data=[]})=>{
     return <ScreenModal>
         <Text>{text}</Text>
         <ScrollView showsVerticalScrollIndicator={false} style={{marginTop:20}}>
-            {[0,1].map(item=><Pressable onPress={()=>setCategory(call)} key={item} style={styles.listView}>
-                <Image source={{uri:ImageURI[item]}} style={StyleSheet.absoluteFillObject} blurRadius={2}/>
-                <View style={styles.containContainer}>
-                    <Text bold size={20}>{call}</Text>
-                </View>
-            </Pressable>)}
+            {data.map((item)=><Pressable onPress={()=>setCategory(item)} key={item.id} style={styles.listView}>
+                <RowView style={styles.containContainer}>
+                    <Image source={{uri:item.url}} style={{height:90, width:90}}/>
+                    <Text bold size={20}>{item.name}</Text>
+                </RowView>
+            </Pressable>
+            )}
         </ScrollView>
     </ScreenModal>
 }
 
-const TextActive = ({active, setActive, children})=><Pressable onPress={()=>setActive(undefined)} style={{marginBottom:10}}>
+const TextActive = ({active, setActive, children})=><Pressable onPress={()=>setActive({name:undefined})} style={{marginBottom:10}}>
     <RowView style={styles.TextActive}>
         <RowView>
             {children}
@@ -51,7 +53,7 @@ const TimingSlot = ({visible, setTiming})=>{
     return <ScreenModal>
         <Text>Choose Timing</Text>
         {
-            timingSlot.map(item=><Pressable onPress={()=>setTiming(item)} key={item} style={styles.timing}>
+            timingSlot.map(item=><Pressable onPress={()=>setTiming({name:item})} key={item} style={styles.timing}>
                 <Text>{item}</Text>
             </Pressable>)
         }
@@ -63,7 +65,8 @@ const Problem = ({visible, setProblem})=>{
     return <ScreenModal>
         <Text>What's Problem</Text>
         {
-            problem.map(item=><Pressable onPress={()=>setProblem(item)} key={item} style={styles.timing}>
+            problem.map(item=>
+            <Pressable onPress={()=>setProblem({name:item})} key={item} style={styles.timing}>
                 <Text>{item}</Text>
             </Pressable>)
         }
@@ -71,46 +74,93 @@ const Problem = ({visible, setProblem})=>{
 }
 
 const AddOrder = () => {
-    const [category, setCategory] = useState()
-    const [Subcategory, setSubCategory] = useState()
-    const [timing, setTiming] = useState()
-    const [problem, setProblem] = useState()
+    var list = ['Choose Category', 'Choose Sub Category', 'Available Time', 'Problem Face']
+    const [category, setCategory] = useState({name : list[0]})
+    const [Subcategory, setSubCategory] = useState({name:list[1]})
+    const [timing, setTiming] = useState({name: list[2]})
+    const [problem, setProblem] = useState({name: list[3]})
+    const [data, setData] = useState()
+    const [loading, setLoading] = useState(true)
+    useEffect(()=>{
+
+        getCategory().then(({data})=>{
+            setData(data);
+            setLoading(false)
+        })
+
+    },[])
+
+    const CategoryData = ()=>{
+        return data.map((item)=>(item))
+    }
+    const SubCatData=()=>{
+        return data.filter(item=>item.name===category.name)[0].subCategory
+    }
+    const save = ()=>{
+        const data = {
+            category:category.id,
+            subCategory:Subcategory.id,
+            problem:problem.name,
+            timing:timing.name
+        }
+        RootNavigation.navigate(CONSTANT.Invitation,data)
+    }
     return (
         <View style={{flex:1}}>
-            <Background/>
-            { timing===undefined && <TimingSlot setTiming={setTiming} visible={timing}/>}
-            { problem === undefined && <Problem visible={problem} setProblem={setProblem}/>}
-            { Subcategory === undefined && <ScreenAddCategoryModal call='Washing Machine' setCategory={setSubCategory} text={'Choose Services'} visible={Subcategory}/>}
-            { category === undefined && <ScreenAddCategoryModal call='Electrician' setCategory={setCategory} text={'Choose Service Category'} visible={category}/>}
-            <View style={{height:HEIGHT*.05}}/>
-            <View style={{margin:20}}>
-                <Text size={30} bold>Linkups</Text>
-                <Text>Post Order</Text>
-            </View>
-            <View style={{margin:20}}>
-                <TextActive active={category} setActive={setCategory}>
-                    <AntDesign name="customerservice" size={24} color={color.inActive} />
-                </TextActive>
-                <TextActive active={Subcategory} setActive={setSubCategory}>
-                    <MaterialIcons name="category" size={24} color={color.inActive} />
-                </TextActive>
-                <TextActive active={timing} setActive={setTiming}>
-                    <Entypo name="time-slot" size={20} color={color.inActive} />
-                </TextActive>
-                <TextActive active={problem} setActive={setProblem}>
-                    <MaterialIcons name="report-problem" size={24} color={color.inActive} />
-                </TextActive>
-                <ImagePicker style={{...styles.TextActive, alignItems:'center', justifyContent:'center', paddingLeft:10}}>
-                    <RowView>
-                        <Feather name="upload" size={30} color={color.active} />
-                        <Text style={{marginLeft:10}}>Upload Image</Text>
-                    </RowView>
-                </ImagePicker>
-            </View>
-            <Pressable style={styles.Button} onPress={()=>RootNavigation.navigate(CONSTANT.Invitation)}>
-                <Text regular>Save</Text>
-            </Pressable>
+            {loading ? 
+                <Loading/>
+            :
+            <>
+
+                    <Background/>
+                    { timing.name===undefined && <TimingSlot setTiming={setTiming} visible={timing}/>}
+                    { problem.name === undefined && <Problem visible={problem} setProblem={setProblem}/>}
+                    { Subcategory.name === undefined && <ScreenAddCategoryModal data={SubCatData()} Subcategory setCategory={setSubCategory} text={'Choose Services'} visible={Subcategory}/>}
+                    { category.name === undefined && <ScreenAddCategoryModal data={CategoryData()} setCategory={setCategory} text={'Choose Service Category'} visible={category}/>}
+
+                    <View style={{height:HEIGHT*.05}}/>
+                    <View style={{margin:20}}>
+                        <Text size={30} bold>Linkups</Text>
+                        <Text>Post Order</Text>
+                    </View>
+                    <View style={{margin:20}}>
+                        <TextActive active={category.name} setActive={setCategory}>
+                            <AntDesign name="customerservice" size={24} color={color.inActive} />
+                        </TextActive>
+                        {
+                            category.name!==list[0] &&
+                            <TextActive active={Subcategory.name} setActive={setSubCategory}>
+                                <MaterialIcons name="category" size={24} color={color.inActive} />
+                            </TextActive>
+                        }
+                        {
+                            Subcategory.name!==list[1] &&
+                            <TextActive active={timing.name} setActive={setTiming}>
+                                <Entypo name="time-slot" size={20} color={color.inActive} />
+                            </TextActive>
+                        }
+                        {
+                            timing.name!==list[2] &&
+                            <TextActive active={problem.name} setActive={setProblem}>
+                                <MaterialIcons name="report-problem" size={24} color={color.inActive} />
+                            </TextActive>
+                        }
+                        {
+                            problem.name!==list[3] &&
+                            <ImagePicker style={{...styles.TextActive, alignItems:'center', justifyContent:'center', paddingLeft:10}}>
+                                <RowView>
+                                    <Feather name="upload" size={30} color={color.active} />
+                                    <Text style={{marginLeft:10}}>Upload Image</Text>
+                                </RowView>
+                            </ImagePicker>
+                        }
+                    </View>
+                    <Pressable style={styles.Button} onPress={save}>
+                        <Text regular>Save</Text>
+                    </Pressable>
+            </>}
         </View>
+
     )
 }
 
@@ -126,9 +176,8 @@ const styles = StyleSheet.create({
     containContainer:{
         width:'100%',
         height: '100%',
-        backgroundColor:'rgba(34, 42, 56,0.3)',
-        justifyContent:'center',
-        alignItems:'center'
+        justifyContent:'space-evenly',
+        backgroundColor: color.lightDark,
     },
     TextActive:{
         backgroundColor: 'rgba(40, 49, 64,0.7)',

@@ -9,9 +9,9 @@ import {Text} from 'styles'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
-const ScreenModal = ({children, style}) => {
+const ScreenModal = ({children, style, isVisible=true}) => {
     return (
-            <Modal backdropOpacity={0.5} isVisible animationIn='zoomIn'>
+            <Modal backdropOpacity={0.5} isVisible={isVisible} animationIn='zoomIn'>
                 <StatusBar backgroundColor='rgba(0, 0, 0,0.5)' />
                 <View style={[styles.container, style]}>
                     {children}

@@ -7,7 +7,7 @@ import color from 'colors'
 
 const Loading = () => {
     return (
-        <RowView>
+        <RowView style={{flex:1, alignSelf: 'center'}}>
             {[1,2,3].map(item=><View
             key={item}
             from={{

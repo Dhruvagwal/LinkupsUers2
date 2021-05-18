@@ -37,17 +37,18 @@ const Point = ({children, last=false, text})=><RowView style={{...styles.Points,
     <Text style={{marginLeft:10}}>{text}</Text>
 </RowView>
 
-const ServiceProfile = () => {
+const ServiceProfile = ({route}) => {
+    const {data} = route.params
     return (
         <View style={{flex:1}}>
             <Background/>
             <View style={{height:HEIGHT*.05}}/>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={{padding:20}}>
-                    <Image source={{uri:URI}} style={styles.image}/>
+                    <Image source={{uri:data.url}} style={styles.image}/>
                     <View style={styles.container}>
                         <View style={{alignSelf:'center', marginBottom:10}}>
-                            <Text size={20} bold>Dhruv Aggarwal</Text>
+                            <Text size={20} bold>{data.name}</Text>
                             <RowView style={{alignSelf: 'center',}}>
                                 <MaterialIcons name="verified" size={24} color={color.blue} />
                                 <Text> Electrician</Text>

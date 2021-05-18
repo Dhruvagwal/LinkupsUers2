@@ -1,6 +1,7 @@
 import React, {useState, useEffect, useRef} from 'react'
-import { StyleSheet, Image, View ,Dimensions, Pressable, ScrollView, FlatList, Animated, Modal, Switch } from 'react-native'
+import { RefreshControl, StyleSheet, Image, View ,Dimensions, Pressable, ScrollView, FlatList, Animated, Modal, Switch } from 'react-native'
 import { MaterialCommunityIcons, MaterialIcons, Entypo, AntDesign, Ionicons } from '@expo/vector-icons'; 
+import axios from 'axios'
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
@@ -10,6 +11,7 @@ import ServiceListView from 'components/ServiceListView'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {AuthConsumer} from 'context/auth'
+import {getPost, getCategory} from 'hooks/useData'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -54,17 +56,33 @@ const MenuModal = ({setMenu, visible})=>{
 
 const Index = () => {
     const {state:{auth}} = AuthConsumer()
-    const ServiceStatus = ['Service', 'Products'] 
+    const ServiceStatus = ['Service', 'Product'] 
     const [active, setActive] = useState(ServiceStatus[0])
     const [loading, setLoading] = useState(false)
     const [menu, setMenu] = useState(false)
+    const [data, setData] = useState([])
+    const [category, setCategory] = useState([])
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const loadData = async (token)=>{
+        setRefreshing(true);
+        const postData = await getPost("service", token)
+        setData(postData.data)
+        const Category = await getCategory(token)
+        setCategory(Category.data)
+        setLoading(false); 
+        setRefreshing(false)
+    }
+
     useEffect(() => {
+        let source = axios.CancelToken.source()
         setLoading(true)
-        const intervalId  = setInterval(()=>{
-            setLoading(false)
-        },2000)
-        return ()=>clearInterval(intervalId)
+        loadData(source.token)
+        return ()=>{
+            source.cancel()
+        }
     }, [active])
+
 
     const order = async ()=>{
         auth && RootNavigation.navigate(CONSTANT.AddOrder)
@@ -87,7 +105,7 @@ const Index = () => {
                             <Ionicons name="filter-outline" size={30} color={color.white} />
                         </Pressable>
                         <Pressable style={{padding:5}} onPress={()=>setMenu(!menu)}>
-                            <MaterialCommunityIcons name="dots-vertical" size={30} color={menu ?color.active :color.white}/>
+                            <MaterialCommunityIcons name="dots-vertical" size={30} color={color.white}/>
                         </Pressable>
                     </RowView>
                 </RowView>
@@ -106,20 +124,34 @@ const Index = () => {
                     </Pressable>}
                 />
                 {/* =============================== */}
-                <ScrollView showsVerticalScrollIndicator={false} style={{flex:1}}>
-                    {loading ?<View style={{height:HEIGHT*.5, alignItems:'center', justifyContent:'center'}}>
-                            <Loading/>
-                    </View>
-                    :
-                        [].map(item=><ServiceListView status={active} key={item}/>)
-                    }
-                </ScrollView>
+                {auth && <>
+                    <ScrollView 
+                        showsVerticalScrollIndicator={false} 
+                        style={{flex:1}} 
+                        refreshControl={
+                            <RefreshControl
+                                refreshing={refreshing}
+                                onRefresh={loadData}
+                                color={[color.active]}
+                            />
+                        }
+                    >
+                        {loading ?<View style={{height:HEIGHT*.5, alignItems:'center', justifyContent:'center'}}>
+                                <Loading/>
+                        </View>
+                        :
+                            data.map(item=><ServiceListView data={item} category={category} status={active} key={item.id}/>)
+                        }
+                        <Text>{'\n'}</Text>
+                    </ScrollView>
+                    </>
+                }
                 </View>
             {/* ======================= */}
             {
                 auth &&
                 <Pressable onPress={order} style={styles.PostButton}>
-                    <Text regular>Place Order</Text>
+                    <Text regular>Place {active}</Text>
                 </Pressable>
 
             }

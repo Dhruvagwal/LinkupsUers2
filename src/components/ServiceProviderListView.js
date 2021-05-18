@@ -9,18 +9,17 @@ import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 
 
-const ServiceProviderListView = () => {
-    const URI = 'https://wallpaperaccess.com/full/2213424.jpg'
+const ServiceProviderListView = ({data={}}) => {
     const IMAGE_SIZE = 90
     return (
-        <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile)}>
+        <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile, {data})}>
             <RowView style={styles.container}>
-                <Image source={{uri:URI}} style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:10}}/>
+                <Image source={{uri:data.url}} style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:10}}/>
                 <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'75%'}}>
                     <RowView style={{alignItems:'flex-start'}}>
                         <RowView>
                             <MaterialIcons name="verified" size={24} color={color.blue} />
-                            <Text regular size={18} style={{width:'65%'}} numberOfLines={1}> Dhruv Aggarwal</Text>
+                            <Text regular size={18} style={{width:'65%'}} numberOfLines={1}> {data.name}</Text>
                         </RowView>
                         <RowView>
                             <AntDesign name="star" size={24} color={color.active} />  
