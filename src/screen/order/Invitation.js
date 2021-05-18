@@ -67,6 +67,7 @@ const Invitation = ({route}) => {
             type:'service',
             user:state.profile.id,
             info:{...info, created:new Date()},
+            status:'posted',
             id:'ORD-'+Math.floor(Math.random()*1000000)
 
         }

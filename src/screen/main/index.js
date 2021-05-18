@@ -136,9 +136,7 @@ const Index = () => {
                             />
                         }
                     >
-                        {loading ?<View style={{height:HEIGHT*.5, alignItems:'center', justifyContent:'center'}}>
-                                <Loading/>
-                        </View>
+                        {loading ?<View style={{height:HEIGHT*.5, alignItems:'center', justifyContent:'center'}}/>
                         :
                             data.map(item=><ServiceListView data={item} category={category} status={active} key={item.id}/>)
                         }
