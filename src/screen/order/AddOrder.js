@@ -30,7 +30,7 @@ const ScreenAddCategoryModal = ({visible, setCategory, text, data=[]})=>{
             {data.map((item)=><Pressable onPress={()=>setCategory(item)} key={item.id} style={styles.listView}>
                 <RowView style={styles.containContainer}>
                     <Image source={{uri:item.url}} style={{height:90, width:90}}/>
-                    <Text bold size={20}>{item.name}</Text>
+                    <Text bold size={20} style={{width:'50%'}} numberOfLines={2} adjustsFontSizeToFit>{item.name}</Text>
                 </RowView>
             </Pressable>
             )}

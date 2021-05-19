@@ -23,7 +23,7 @@ const ServiceListView = ({data={}, category=[]}) => {
                         <Text style={{width:WIDTH*.6}} bold numberOfLines={2} adjustsFontSizeToFit>{SubCat.name}</Text>
                         <RowView style={{justifyContent:'space-between'}}>
                             <Text size={12}>{diff}</Text>
-                            <Text size={12}>Posted</Text>
+                            <Text size={12} style={{textTransform:'capitalize'}}>{data.status}</Text>
                         </RowView>
                         <Text>{data.info.problem}</Text>
                     </View>

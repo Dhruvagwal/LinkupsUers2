@@ -27,6 +27,7 @@ const Point = ({children, last=false})=><View>
 const OrderDescription = ({route}) => {
     const {data, category, SubCat} = route.params
     const [invited, setInvited] = useState([])
+    const [proposal, setProposal] = useState([])
     const [loading, setLoading] = useState(true)
 
     const Delete =async ()=>{
@@ -35,19 +36,24 @@ const OrderDescription = ({route}) => {
     }
     useEffect(() => {
         var list = []
-        data.invited.map(async item=>{
-            await getDataById('serviceProvider',item)
+        data.invited>0 && data.invited.map(async item=>{
+                await getDataById('serviceProvider',item)
                 .then(({data})=>{
                     list = [...list, data]
                     setInvited(list)
                 })
-                setLoading(false)
             })
+        data.proposal!== undefined && data.proposal.length > 0 ?data.proposal.map(async item=>{
+            await getDataById('serviceProvider',item)
+            .then(({data})=>{
+                list = [...list, data]
+                setProposal(list)
+            })
+            setLoading(false)
+        }) : setLoading(false)
     }, [])
     return (
-        <View style={{flex:1}}>
-            {!loading
-            ?<>            
+        <View style={{flex:1}}>          
                 <View style={{height:HEIGHT*.05}}/>
                 <Background/>
                 <View style={{margin:20, flex:1}}>
@@ -60,7 +66,7 @@ const OrderDescription = ({route}) => {
                                     <Image source={{uri:SubCat.url}} style={{width:100, height:100}}/>
                                     <View style={{alignItems:'flex-start', height:100, marginLeft:5, justifyContent:'space-between'}}>
                                         <Text style={{width:WIDTH*.6}} bold numberOfLines={2} adjustsFontSizeToFit>{SubCat.name}</Text>
-                                        <Text>Status:<Text regular> Posted</Text></Text>
+                                        <Text>Status:<Text regular style={{textTransform:'capitalize'}}> {data.status}</Text></Text>
                                         <Text>{data.info.timing}</Text>
                                     </View>
                                 </RowView>
@@ -71,18 +77,24 @@ const OrderDescription = ({route}) => {
                                 <Point>Delievery</Point>
                                 <Point last>{data.info.problem}</Point>
                             </View>
-                            {/* <View style={{marginTop:10}}>
-                                <Text style={{margin:10}} size={12}>Proposals</Text>
-                                <ServiceProviderListView/>
-                                <ServiceProviderListView/>
-                                <ServiceProviderListView/>
-                            </View> */}
-                            <View style={{marginTop:10}}>
-                                <Text style={{margin:10}} size={12}>Invited</Text>
-                                {
-                                    invited.map(item=><ServiceProviderListView key={Math.random().toString()} data={item}/>)
-                                }
-                            </View>
+                            {!loading?
+                                <>
+                                    {proposal.length>0 && <View style={{marginTop:10}}>
+                                        <Text style={{margin:10}} size={12}>Proposals</Text>
+                                        {
+                                            proposal.map(item=><ServiceProviderListView key={Math.random().toString()} data={item} proposal/>)
+                                        }
+                                    </View>}
+                                    {invited.length>0 && <View style={{marginTop:10}}>
+                                        <Text style={{margin:10}} size={12}>Invited</Text>
+                                        {
+                                            invited.map(item=><ServiceProviderListView key={Math.random().toString()} data={item}/>)
+                                        }
+                                    </View>}
+                                </>
+                                :
+                                <Loading/>
+                            }
                         </View>
                         <Text>{'\n'}</Text>
                         <Pressable onPress={Delete}>
@@ -93,9 +105,6 @@ const OrderDescription = ({route}) => {
                         </Pressable>
                     </ScrollView>
                 </View>
-            </>:
-            <Loading/>
-            }
         </View>
     )
 }

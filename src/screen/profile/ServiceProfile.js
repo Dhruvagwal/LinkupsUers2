@@ -38,7 +38,7 @@ const Point = ({children, last=false, text})=><RowView style={{...styles.Points,
 </RowView>
 
 const ServiceProfile = ({route}) => {
-    const {data} = route.params
+    const {data, proposal} = route.params
     return (
         <View style={{flex:1}}>
             <Background/>
@@ -91,9 +91,9 @@ const ServiceProfile = ({route}) => {
                     <Text>{'\n'}</Text>
                 </View>
             </ScrollView>
-            <View style={{position:'absolute',bottom:0, backgroundColor:color.active, width:'100%', alignItems:'center', padding:15}}>
+            {proposal && <View style={{position:'absolute',bottom:0, backgroundColor:color.active, width:'100%', alignItems:'center', padding:15}}>
                 <Text size={20} bold>Accept</Text>
-            </View>
+            </View>}
         </View>
     )
 }
