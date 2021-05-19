@@ -21,7 +21,7 @@ const Background = ()=>{
 
 const IMAGE_SIZE = 200
 
-const Review=()=><View style={styles.contentContainer}>
+const Review=()=><View style={{...styles.contentContainer, backgroundColor: 'rgba(34, 42, 56,0.8)',}}>
     <RowView>
         <Image source={{uri:'https://i.pinimg.com/originals/73/16/f5/7316f550de9ca0045e3d8d98a5bb5e44.png'}} style={{height:50, width:50, borderRadius:50}}/>
         <View style={{marginLeft:10}}>
@@ -40,7 +40,7 @@ const Point = ({children, last=false, text})=><RowView style={{...styles.Points,
 </RowView>
 
 const ServiceProfile = ({route}) => {
-    const {data, proposal, orderId} = route.params
+    const {data, proposal, orderId, proposalData} = route.params
     const [loading, setLoading] = useState(false)
     const [pro, setPro] = useState('')
     const {state} = DataConsumer()
@@ -87,18 +87,32 @@ const ServiceProfile = ({route}) => {
                             </RowView>
                         </View>
                     </View>
-                    <Text size={12} style={{margin:10, marginBottom:-5}}>About</Text>
+
+
+                    <Text size={12} style={{margin:10, marginBottom:-5}}>Details</Text>
                     <View style={styles.contentContainer}>
+                        <Point>
+                            <Entypo name="price-tag" size={24} color={color.active} />
+                            <RowView style={{marginLeft:10}}>
+                                <Text>Price:</Text>
+                                <Text size={20} regular> {`₹ ${proposalData.price}`}</Text>
+                            </RowView>
+                        </Point>
+                        <Point text={proposalData.date}>
+                            <MaterialIcons name="date-range" size={24} color={color.active} />
+                        </Point>
                         <Point text={`+${data.id}`}>
                             <Ionicons name="call" size={24} color={color.active} /> 
                         </Point>
                         <Point text={data.Address}>
                             <Entypo name="address" size={24} color={color.active} />
                         </Point>
-                        <Point last text={`Since ${moment(data.createdOn).format('LL')}`}>
+                        <Point last text={`Since ${moment(data.createdOn).format('DD-MM-YYYY')}`}>
                             <Entypo name="flag" size={24} color={color.active}/>
                         </Point>
                     </View>
+
+
                     <View style={{marginTop:10}}>
                         <Text size={12} style={{margin:10, marginBottom:-5}}>Customer Reviews</Text>
                         <Review/>
@@ -107,6 +121,8 @@ const ServiceProfile = ({route}) => {
                         <Review/>
                         <Review/>
                     </View>
+
+                    
                     <Text>{'\n'}</Text>
                     <Text>{'\n'}</Text>
                 </View>
@@ -126,7 +142,7 @@ export default ServiceProfile
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor:'rgba(34, 42, 56,0.8)',
+        backgroundColor:'rgba(34, 42, 56,0.0)',
         marginTop:-IMAGE_SIZE/2,
         paddingTop:IMAGE_SIZE/2+10,
         borderRadius:20,
@@ -137,7 +153,7 @@ const styles = StyleSheet.create({
         width:'50%'
     },
     contentContainer:{
-        backgroundColor:'rgba(34, 42, 56,0.8)',
+        backgroundColor:'rgba(34, 42, 56,0.0)',
         marginTop:10,
         padding:10,
         borderRadius:20
@@ -145,7 +161,6 @@ const styles = StyleSheet.create({
     Points:{
         borderBottomWidth:2,
         paddingVertical:10,
-        marginHorizontal:10,
         borderBottomColor:color.lightDark
     },
     image:{

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import { StyleSheet, View, Dimensions, Image, ScrollView, TextInput, Pressable } from 'react-native'
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { MaterialCommunityIcons, AntDesign, MaterialIcons } from '@expo/vector-icons'; 
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
@@ -19,9 +19,10 @@ const Background = ()=><View style={[{flex:1, alignItems:'stretch',flexDirection
     <View style={{backgroundColor:color.secondaryDark, width:'15%'}}/>
 </View>
 
-const Point = ({children, last=false})=><View>
-    <Text style={{...styles.Points, borderBottomWidth:last ? 0:2}}>{children}</Text>
-</View>
+const Point = ({children, last=false,text=''})=><RowView style={{...styles.Points, borderBottomWidth:last ? 0:2}}>
+    {children}
+    <Text style={{marginLeft:10}}>{text}</Text>
+</RowView>
 
 
 const OrderDescription = ({route}) => {
@@ -47,7 +48,7 @@ const OrderDescription = ({route}) => {
                     })
                 })
             data.proposal!== undefined && data.proposal.length > 0 ?data.proposal.map(async item=>{
-                await getDataById('serviceProvider',item)
+                await getDataById('serviceProvider',item.id)
                 .then(({data})=>{
                     list = [...list, data]
                     setProposal(list)
@@ -61,6 +62,7 @@ const OrderDescription = ({route}) => {
             })
         }
     }, [])
+    // console.log(data.proposal.find(item=>item.id==='918595771213'))
     return (
         <View style={{flex:1}}>          
                 <View style={{height:HEIGHT*.05}}/>
@@ -70,21 +72,30 @@ const OrderDescription = ({route}) => {
                     <Text>Order Detail</Text>
                     <ScrollView showsVerticalScrollIndicator={false}>    
                         <View style={{marginTop:20}}>
-                            <View style={{...styles.container, backgroundColor: '#0000',}}>
+                            <View style={{...styles.container, backgroundColor: '#0000'}}>
                                 <RowView style={{height:100}}>
                                     <Image source={{uri:SubCat.url}} style={{width:100, height:100}}/>
-                                    <View style={{alignItems:'flex-start', height:100, marginLeft:5, justifyContent:'space-between'}}>
+                                    <View style={{alignItems:'flex-start', height:100, marginLeft:10, justifyContent:'space-between'}}>
                                         <Text style={{width:WIDTH*.6}} bold numberOfLines={2} adjustsFontSizeToFit>{SubCat.name}</Text>
                                         <Text size={13}>Status:<Text regular style={{textTransform:'capitalize'}} size={13}> {data.status}</Text></Text>
                                         <Text size={13}>{data.info.timing}</Text>
                                     </View>
                                 </RowView>
                             </View>
-                            <Text style={{margin:10}} size={12}>Info</Text>
-                            <View style={{...styles.container, backgroundColor: '#0000',}}>
-                                <Point>{category.name}</Point>
-                                <Point>Delievery</Point>
-                                <Point last>{data.info.problem}</Point>
+                            <Text style={{margin:10, marginBottom:0}} size={12}>Info</Text>
+                            <View style={{...styles.container, backgroundColor: '#0000',paddingTop:0}}>
+                                <Point text={category.name}>
+                                    <AntDesign name="customerservice" size={24} color={color.active} />
+                                </Point>
+                                <Point text={'Delievery'}>
+                                    <MaterialCommunityIcons name="truck-delivery" size={24} color={color.active} />
+                                </Point>
+                                <Point text={data.id}>
+                                    <AntDesign name="idcard" size={24} color={color.active} />
+                                </Point>
+                                <Point text={data.info.problem} last>
+                                    <MaterialIcons name="report-problem" size={24} color={color.active} />
+                                </Point>
                             </View>
                             {!loading?
                                 <>
@@ -93,7 +104,7 @@ const OrderDescription = ({route}) => {
                                         {proposal.length>0 && <View style={{marginTop:10}}>
                                             <Text style={{margin:10}} size={12}>Proposals</Text>
                                             {
-                                                proposal.map(item=><ServiceProviderListView key={Math.random().toString()} orderId={data.id} data={item} category={category} proposal/>)
+                                                proposal.map(item=><ServiceProviderListView key={Math.random().toString()} proposalData={data.proposal.find(response=>response.id===item.id)} orderId={data.id} data={item} category={category} proposal/>)
                                             }
                                         </View>}
                                         {invited.length>0 && <View style={{marginTop:10}}>
@@ -105,7 +116,7 @@ const OrderDescription = ({route}) => {
                                         </>:
                                         <View style={{marginTop:10}}>
                                             <Text style={{margin:10}} size={12}>Provider</Text>
-                                            <ServiceProviderListView key={Math.random().toString()} orderId={data.id} data={provider} category={category}/>
+                                            <ServiceProviderListView key={Math.random().toString()} orderId={data.id} proposalData={data.proposal.find(response=>response.id===provider.id)} data={provider} category={category}/>
                                         </View>
                                     }
                                 </>

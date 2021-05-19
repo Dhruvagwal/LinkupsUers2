@@ -1,6 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Image, Pressable } from 'react-native'
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons'; 
+import moment from 'moment'
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
@@ -9,10 +10,11 @@ import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 
 
-const ServiceProviderListView = ({data={}, proposal=false, orderId=''}) => {
+const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalData={}}) => {
     const IMAGE_SIZE = 90
+    console.log(proposalData)
     return (
-        <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile, {data, proposal, orderId})}>
+        <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile, {data, proposal, orderId, proposalData})}>
             <RowView style={styles.container}>
                 <Image source={{uri:data.url}} style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:10}}/>
                 <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'75%'}}>
@@ -26,8 +28,9 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId=''}) => {
                             <Text> 4.5</Text>
                         </RowView>
                     </RowView>
+                    <Text size={20} regular>₹ {proposalData.price}</Text>
                     <RowView style={{justifyContent:'space-between'}}>
-                        <Text>25 Meters away</Text>
+                        <Text>Deliver: {proposalData.date}</Text>
                         <Pressable style={styles.Call}>
                             <Ionicons name="call" size={24} color={color.white} />
                         </Pressable>
@@ -45,7 +48,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(34, 42, 56,0.8)',
         padding:10,
         borderRadius:20,
-        height:110,
+        height:120,
         marginBottom:10
     },
     Call:{
