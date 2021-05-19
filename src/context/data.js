@@ -14,6 +14,8 @@ const reducer = (state, action)=>{
     switch (action.type){
         case CONTEXT.UPDATE:
             return {...state, profile:action.profile}
+        case CONTEXT.CATEGORY:
+            return {...state, category:action.category}
         default:
             return state
     }
@@ -26,13 +28,16 @@ const DataProvider = ({children})=>{
         const {data}= await getUsersDetails()
         dispatch({type:CONTEXT.UPDATE, profile:data})
     }
+    const setCat = async (category)=>{
+        dispatch({type:CONTEXT.CATEGORY, category})
+    }
 
     useEffect(()=>{
         Update()
     },[])
 
 
-    return <Context.Provider value={{state, Update}}>
+    return <Context.Provider value={{state, Update, setCat}}>
         {children}
     </Context.Provider>
 }

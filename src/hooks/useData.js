@@ -21,6 +21,10 @@ const saveOrder = (data)=>{
     return instances.post('DBcreate/api/order/create', data)
 }
 
+const updateOrder = async (data, id)=>{
+    return instances.put(`Update/api/order/${id}`,data)
+}
+
 const getPost = async (type, CancelToken)=>{
     const LINKUPS_USER_PHONE_NUMBER = await AsyncStorage.getItem(STORAGE_KEY_3)
     return instances.post(`QuerySearch/api/order/search`,{
@@ -37,4 +41,4 @@ const getDataById = (database, id)=>{
     return instances.get(`/ReadId/api/${database}/${id}`)
 }
 
-export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById}
+export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById, updateOrder}

@@ -1,10 +1,13 @@
-import React from 'react'
-import { StyleSheet, View, Dimensions, Image, ScrollView, StatusBar, ImageBackground } from 'react-native'
+import React, {useState, useEffect} from 'react'
+import { StyleSheet, View, Dimensions, Image, ScrollView, StatusBar, ImageBackground, Pressable } from 'react-native'
 import { AntDesign, MaterialCommunityIcons, Ionicons, Entypo, SimpleLineIcons, MaterialIcons} from '@expo/vector-icons'; 
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
 import moment from 'moment';
+import Loading from 'components/Loading'
+import { updateOrder } from 'hooks/useData'
+import {DataConsumer} from 'context/data'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -16,7 +19,6 @@ const Background = ()=>{
     </View>
 }
 
-const URI = 'https://wallpaperaccess.com/full/2213424.jpg'
 const IMAGE_SIZE = 200
 
 const Review=()=><View style={styles.contentContainer}>
@@ -38,7 +40,25 @@ const Point = ({children, last=false, text})=><RowView style={{...styles.Points,
 </RowView>
 
 const ServiceProfile = ({route}) => {
-    const {data, proposal} = route.params
+    const {data, proposal, orderId} = route.params
+    const [loading, setLoading] = useState(false)
+    const [pro, setPro] = useState('')
+    const {state} = DataConsumer()
+    useEffect(() => {
+        const result = state.category.find(item=>item.id === data.category)
+        setPro(result.name)
+    }, [])
+    const accept = async ()=>{
+        setLoading(true)
+        const updateData = {
+            provider: data.id,
+            acceptedOn:new Date(),
+            status:'inprogress'
+        }
+        await updateOrder(updateData, orderId)
+        setLoading(false)
+    }
+
     return (
         <View style={{flex:1}}>
             <Background/>
@@ -51,7 +71,7 @@ const ServiceProfile = ({route}) => {
                             <Text size={20} bold>{data.name}</Text>
                             <RowView style={{alignSelf: 'center',}}>
                                 <MaterialIcons name="verified" size={24} color={color.blue} />
-                                <Text> Electrician</Text>
+                                <Text> {pro}</Text>
                             </RowView>
                         </View>
                         <View style={{padding:10}}>
@@ -69,13 +89,13 @@ const ServiceProfile = ({route}) => {
                     </View>
                     <Text size={12} style={{margin:10, marginBottom:-5}}>About</Text>
                     <View style={styles.contentContainer}>
-                        <Point text='+91 8595771213'>
+                        <Point text={`+${data.id}`}>
                             <Ionicons name="call" size={24} color={color.active} /> 
                         </Point>
-                        <Point text='X-block 133/1 Gali No. 11 Delhi-110053'>
+                        <Point text={data.Address}>
                             <Entypo name="address" size={24} color={color.active} />
                         </Point>
-                        <Point last text={`Since ${moment().format('LL')}`}>
+                        <Point last text={`Since ${moment(data.createdOn).format('LL')}`}>
                             <Entypo name="flag" size={24} color={color.active}/>
                         </Point>
                     </View>
@@ -91,9 +111,13 @@ const ServiceProfile = ({route}) => {
                     <Text>{'\n'}</Text>
                 </View>
             </ScrollView>
-            {proposal && <View style={{position:'absolute',bottom:0, backgroundColor:color.active, width:'100%', alignItems:'center', padding:15}}>
-                <Text size={20} bold>Accept</Text>
-            </View>}
+            {!loading ?
+            <>
+                {proposal && <Pressable onPress={accept} style={{position:'absolute',bottom:0, backgroundColor:color.active, width:'100%', alignItems:'center', padding:15}}>
+                    <Text size={20} bold>Accept</Text>
+                </Pressable>}
+            </>:
+            <Loading/>}
         </View>
     )
 }

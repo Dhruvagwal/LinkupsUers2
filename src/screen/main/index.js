@@ -11,6 +11,7 @@ import ServiceListView from 'components/ServiceListView'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {AuthConsumer} from 'context/auth'
+import {DataConsumer} from 'context/data'
 import {getPost, getCategory} from 'hooks/useData'
 
 const HEIGHT = Dimensions.get('screen').height
@@ -56,6 +57,7 @@ const MenuModal = ({setMenu, visible})=>{
 
 const Index = () => {
     const {state:{auth}} = AuthConsumer()
+    const {setCat} = DataConsumer()
     const ServiceStatus = ['Service', 'Product'] 
     const [active, setActive] = useState(ServiceStatus[0])
     const [loading, setLoading] = useState(false)
@@ -70,6 +72,7 @@ const Index = () => {
         setData(postData.data)
         const Category = await getCategory(token)
         setCategory(Category.data)
+        setCat(Category.data)
         setLoading(false); 
         setRefreshing(false)
     }
