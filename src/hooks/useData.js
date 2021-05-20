@@ -41,4 +41,8 @@ const getDataById = (database, id)=>{
     return instances.get(`/ReadId/api/${database}/${id}`)
 }
 
-export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById, updateOrder}
+const updateProviderProfile = (id, data)=>{
+    return instances.put(`Update/api/serviceProvider/${id}`,data)
+}
+
+export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById, updateOrder, updateProviderProfile}

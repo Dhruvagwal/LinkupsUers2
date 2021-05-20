@@ -12,7 +12,6 @@ import CONSTANT from 'navigation/navigationConstant'
 
 const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalData={}}) => {
     const IMAGE_SIZE = 90
-    console.log(proposalData)
     return (
         <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile, {data, proposal, orderId, proposalData})}>
             <RowView style={styles.container}>

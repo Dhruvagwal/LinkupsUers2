@@ -52,7 +52,7 @@ const ServiceProfile = ({route}) => {
         setLoading(true)
         const updateData = {
             provider: data.id,
-            acceptedOn:new Date(),
+            startsOn:new Date(),
             status:'inprogress'
         }
         await updateOrder(updateData, orderId)

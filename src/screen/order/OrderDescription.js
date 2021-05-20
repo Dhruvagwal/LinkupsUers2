@@ -9,6 +9,9 @@ import ServiceProviderListView from 'components/ServiceProviderListView'
 import {deleteData, getDataById} from 'hooks/useData'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
+import {updateOrder} from 'hooks/useData'
+import moment from 'moment';
+import FeedBackScreen from './FeedBackScreen'
 
 
 const HEIGHT= Dimensions.get('screen').height
@@ -29,14 +32,25 @@ const OrderDescription = ({route}) => {
     const {data, category, SubCat} = route.params
     const [invited, setInvited] = useState([])
     const [proposal, setProposal] = useState([])
+    const [review, setReview] = useState(false)
     const [provider, setProvider] = useState([])
     const [loading, setLoading] = useState(true)
-    const status = ['posted', 'inprogress']
+    const status = ['posted', 'inprogress', 'completed', 'paid']
 
     const Delete =async ()=>{
         await deleteData('order',data.id)
         RootNavigation.navigate(CONSTANT.Home)
     }
+
+    const checkout =async ()=>{
+        const UpdatedData = {
+            status:status[3],
+            paidOn:moment().format('LLL')
+        }
+        await updateOrder(UpdatedData,data.id )
+        setReview(true)
+    }
+
     useEffect(() => {
         var list = []
         if (data.status===status[0]){
@@ -62,11 +76,12 @@ const OrderDescription = ({route}) => {
             })
         }
     }, [])
-    // console.log(data.proposal.find(item=>item.id==='918595771213'))
+
     return (
         <View style={{flex:1}}>          
                 <View style={{height:HEIGHT*.05}}/>
                 <Background/>
+                {review && <FeedBackScreen data={data} provider={provider}/>}
                 <View style={{margin:20, flex:1}}>
                     <Text size={30} bold>Linkups</Text>
                     <Text>Order Detail</Text>
@@ -133,6 +148,11 @@ const OrderDescription = ({route}) => {
                         </Pressable>}
                     </ScrollView>
                 </View>
+                {
+                    data.status === status[2] && <Pressable onPress={checkout} style={styles.bottomButton}>
+                        <Text regular>Checkout</Text>
+                    </Pressable>
+                }
         </View>
     )
 }
@@ -158,5 +178,10 @@ const styles = StyleSheet.create({
         borderBottomWidth:2,
         paddingVertical:10,
         borderBottomColor:color.lightDark
+    },
+    bottomButton:{
+        backgroundColor: color.active,
+        padding:20,
+        alignItems:'center'
     }
 })
