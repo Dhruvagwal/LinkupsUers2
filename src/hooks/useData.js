@@ -25,12 +25,12 @@ const updateOrder = async (data, id)=>{
     return instances.put(`Update/api/order/${id}`,data)
 }
 
-const getPost = async (type, CancelToken)=>{
+const getPost = async (type)=>{
     const LINKUPS_USER_PHONE_NUMBER = await AsyncStorage.getItem(STORAGE_KEY_3)
     return instances.post(`QuerySearch/api/order/search`,{
         user:LINKUPS_USER_PHONE_NUMBER,
         type
-    },{CancelToken})
+    })
 }
 
 const deleteData = (database, id)=>{

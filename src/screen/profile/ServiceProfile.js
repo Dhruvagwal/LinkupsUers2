@@ -22,16 +22,14 @@ const Background = ()=>{
 
 const IMAGE_SIZE = 200
 
-const Review=()=><View style={{...styles.contentContainer, backgroundColor: 'rgba(34, 42, 56,0.8)',}}>
+const Review=({data={}})=><View style={{...styles.contentContainer, backgroundColor: 'rgba(34, 42, 56,0.8)',}}>
     <RowView>
-        <Image source={{uri:'https://i.pinimg.com/originals/73/16/f5/7316f550de9ca0045e3d8d98a5bb5e44.png'}} style={{height:50, width:50, borderRadius:50}}/>
         <View style={{marginLeft:10}}>
-            <Text>Shamrocks</Text>
-            <Text><AntDesign name="star" size={15} color={color.active} /> 4.5</Text>
+            <Text><AntDesign name="star" size={15} color={color.active} /> {Math.round(data.rating*1.2*100)/100}</Text>
         </View>
     </RowView>
     <View>
-        <Text size={12} style={{width:'100%'}} numberOfLines={2}>Awesome Service! I would like to recomm to you all.</Text>
+        <Text size={12} style={{width:'100%'}} numberOfLines={2}>{data.review}</Text>
     </View>
 </View>
 
@@ -64,7 +62,6 @@ const ServiceProfile = ({route}) => {
         await sendPushNotification(data.token, notifyData)
         setLoading(false)
     }
-
     return (
         <View style={{flex:1}}>
             <Background/>
@@ -121,11 +118,9 @@ const ServiceProfile = ({route}) => {
 
                     <View style={{marginTop:10}}>
                         <Text size={12} style={{margin:10, marginBottom:-5}}>Customer Reviews</Text>
-                        <Review/>
-                        <Review/>
-                        <Review/>
-                        <Review/>
-                        <Review/>
+                        {
+                            data.rating.map(item=><Review key={Math.random().toString()} data={item}/>)
+                        }
                     </View>
 
                     

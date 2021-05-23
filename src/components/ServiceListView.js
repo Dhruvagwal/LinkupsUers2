@@ -19,11 +19,11 @@ const ServiceListView = ({data={}, category=[]}) => {
         <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.OrderDescription,{data, category:result, SubCat})} style={styles.container}>
                 <RowView>
                     <Image source={{uri:SubCat.url}} style={{width:100, height:100}}/>
-                    <View style={{justifyContent: 'space-between',marginBottom:5, marginLeft:10,height:'80%'}}>
+                    <View style={{justifyContent: 'space-between',marginBottom:5, marginLeft:10,height:'80%', width :'95%'}}>
                         <Text style={{width:WIDTH*.6}} bold numberOfLines={2} adjustsFontSizeToFit>{SubCat.name}</Text>
                         <RowView style={{justifyContent:'space-between', width:'73%'}}>
-                            <Text>{diff}</Text>
-                            <Text size={13} style={{textTransform:'capitalize'}}>{data.status}</Text>
+                            <Text size={13}>{diff}</Text>
+                            <Text size={13} bold style={{textTransform:'capitalize', color:color.active}}>{data.status}</Text>
                         </RowView>
                         <Text>{data.info.problem}</Text>
                     </View>

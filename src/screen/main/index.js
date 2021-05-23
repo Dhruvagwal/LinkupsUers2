@@ -9,6 +9,7 @@ import Login from './Login'
 import ServiceListView from 'components/ServiceListView' 
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
+import Filter from './filter'
 import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
 import {getPost, getCategory, updateUserProfile} from 'hooks/useData'
@@ -68,7 +69,9 @@ const Index = () => {
     const [menu, setMenu] = useState(false)
     const [data, setData] = useState([])
     const [category, setCategory] = useState([])
+    const [filter, setFilter] = useState(false)
     const [refreshing, setRefreshing] = React.useState(false);
+    const [filterList, setFilterList] = useState([])
 
     const loadData = async (token)=>{
         setRefreshing(true);
@@ -85,21 +88,37 @@ const Index = () => {
     }
 
     useEffect(() => {
-        let source = axios.CancelToken.source()
         setLoading(true)
-        auth && loadData(source.token)
-        return ()=>{
-            source.cancel()
+        if(active===ServiceStatus[0]){
+            auth && loadData()
+        }else{
+            // console.log(data)
         }
     }, [active])
 
     const order = async ()=>{
         auth && RootNavigation.navigate(CONSTANT.AddOrder)
     }
+
+    const applyFilter =async ()=>{
+        console.log(filterList)
+        setRefreshing(true);
+        setFilter(false) 
+        const postData = await getPost("service")
+        if(filterList.length!==0){
+            const filter_Result = postData.data.filter(({status})=>filterList.find(item=>item.toLowerCase()===status)) 
+            setData(filter_Result)
+        }else{
+            setData(postData.data)
+        }
+        setRefreshing(false);
+    }
+    
     return (
         <View style={{flex:1}}>
             {!auth && <Login/>}
             <Background/>
+            {filter && <Filter filterList={filterList} applyFilter={applyFilter} setFilterList={setFilterList} setFilter={setFilter}/>}
             {/* ======================= */}
             <View style={{height:HEIGHT*.05}}/>
             {/* ======================== */}
@@ -110,7 +129,7 @@ const Index = () => {
                         <Text>Home</Text>
                     </View>
                     <RowView>
-                        <Pressable style={{padding:5}}>
+                        <Pressable onPress={()=>setFilter(true)} style={{padding:5}}>
                             <Ionicons name="filter-outline" size={30} color={color.white} />
                         </Pressable>
                         <Pressable style={{padding:5}} onPress={()=>setMenu(!menu)}>
@@ -133,7 +152,7 @@ const Index = () => {
                     </Pressable>}
                 />
                 {/* =============================== */}
-                {auth && <>
+                {(active===ServiceStatus[0] && auth) && <>
                     <ScrollView 
                         showsVerticalScrollIndicator={false} 
                         style={{flex:1}} 
@@ -151,18 +170,16 @@ const Index = () => {
                         }
                         <Text>{'\n'}</Text>
                     </ScrollView>
+                    {/* ======================= */}
+                        <Pressable onPress={order} style={styles.PostButton}>
+                            <Text regular>Place {active}</Text>
+                        </Pressable>
                     </>
                 }
-                </View>
-            {/* ======================= */}
-            {
-                auth &&
-                <Pressable onPress={order} style={styles.PostButton}>
-                    <Text regular>Place {active}</Text>
-                </Pressable>
-
-            }
-            {/* ======================= */}
+                {(active===ServiceStatus[1] && auth) && <View>
+                    <Text>Dhruv</Text>
+                </View>}
+            </View>
         </View>
     )
 }
