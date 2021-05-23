@@ -8,6 +8,7 @@ import moment from 'moment';
 import Loading from 'components/Loading'
 import { updateOrder } from 'hooks/useData'
 import {DataConsumer} from 'context/data'
+import { sendPushNotification } from 'middlewares/notification'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -55,7 +56,12 @@ const ServiceProfile = ({route}) => {
             startsOn:new Date(),
             status:'inprogress'
         }
+        const notifyData = {
+            title:`Got New Order`,
+            body:`${state.profile.name} accepted your proposal`
+        }
         await updateOrder(updateData, orderId)
+        await sendPushNotification(data.token, notifyData)
         setLoading(false)
     }
 

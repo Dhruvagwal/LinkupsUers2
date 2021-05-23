@@ -21,9 +21,9 @@ const ServiceListView = ({data={}, category=[]}) => {
                     <Image source={{uri:SubCat.url}} style={{width:100, height:100}}/>
                     <View style={{justifyContent: 'space-between',marginBottom:5, marginLeft:10,height:'80%'}}>
                         <Text style={{width:WIDTH*.6}} bold numberOfLines={2} adjustsFontSizeToFit>{SubCat.name}</Text>
-                        <RowView style={{justifyContent:'space-between'}}>
-                            <Text size={12}>{diff}</Text>
-                            <Text size={12} style={{textTransform:'capitalize'}}>{data.status}</Text>
+                        <RowView style={{justifyContent:'space-between', width:'73%'}}>
+                            <Text>{diff}</Text>
+                            <Text size={13} style={{textTransform:'capitalize'}}>{data.status}</Text>
                         </RowView>
                         <Text>{data.info.problem}</Text>
                     </View>

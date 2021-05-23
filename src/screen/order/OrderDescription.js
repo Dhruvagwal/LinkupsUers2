@@ -7,11 +7,13 @@ import color from 'colors'
 import Loading from 'components/Loading' 
 import ServiceProviderListView from 'components/ServiceProviderListView'
 import {deleteData, getDataById} from 'hooks/useData'
+import {DataConsumer} from 'context/data'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {updateOrder} from 'hooks/useData'
 import moment from 'moment';
 import FeedBackScreen from './FeedBackScreen'
+import { sendPushNotification } from 'middlewares/notification'
 
 
 const HEIGHT= Dimensions.get('screen').height
@@ -30,6 +32,7 @@ const Point = ({children, last=false,text=''})=><RowView style={{...styles.Point
 
 const OrderDescription = ({route}) => {
     const {data, category, SubCat} = route.params
+    const {state:{profile}} = DataConsumer()
     const [invited, setInvited] = useState([])
     const [proposal, setProposal] = useState([])
     const [review, setReview] = useState(false)
@@ -47,7 +50,12 @@ const OrderDescription = ({route}) => {
             status:status[3],
             paidOn:moment().format('LLL')
         }
+        const notifyData = {
+            title:`Payment Done`,
+            body:`${profile.name} paid you`
+        }
         await updateOrder(UpdatedData,data.id )
+        await sendPushNotification(provider.token, notifyData)
         setReview(true)
     }
 

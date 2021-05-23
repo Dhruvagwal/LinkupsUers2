@@ -11,6 +11,7 @@ import {getServiceProvider, saveOrder} from 'hooks/useData'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {DataConsumer} from 'context/data'
+import { sendPushNotification } from 'middlewares/notification'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -29,7 +30,7 @@ const InvitationService = ({onPress, data})=>{
     const [pressed, setPressed] = useState(false)
     return <RowView style={styles.container}>
     <Image source={{uri:data.url}} style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:20}}/>
-    <View style={{marginLeft:10, width:'63%', overflow:'hidden'}}>
+    <View style={{marginLeft:10, width:'60%', overflow:'hidden'}}>
         <RowView>
             <MaterialIcons name="verified" size={24} color={color.blue} />
             <Text style={{width:WIDTH/2.3, marginLeft:5}} numberOfLines={1} size={18} bold>{data.name}</Text>
@@ -62,20 +63,28 @@ const Invitation = ({route}) => {
     const [data, setData] = useState()
     const Save=async()=>{
         setLoading(true)
+        const id = 'ORD-'+Math.floor(Math.random()*1000000)
         const DATA = {
             invited,
             type:'service',
             user:state.profile.id,
             info:{...info, created:new Date()},
             status:'posted',
-            id:'ORD-'+Math.floor(Math.random()*1000000)
-
+            id
         }
         await saveOrder(DATA)
+
+        const notifyData = {
+            title:`Got An Invitation`,
+            body:`${state.profile.name} has sent you an invitation`,
+            data:{id}
+        }
+        
+        data.filter(item=>invited.find(res=>res===item.id)).map(async ({token})=>await sendPushNotification(token, notifyData))
         setSuccess(true)
         setTimeout(()=>{setSuccess(false);RootNavigation.navigate(CONSTANT.Home)}, 3000)
+        setLoading(false)
     }
-
     useEffect(() => {
         getServiceProvider().then(({data})=>{setData(data); setLoading(false)})
     }, [])
@@ -85,7 +94,7 @@ const Invitation = ({route}) => {
         const result = invited.filter(item=>item===data.id)
         result.length === 0 ? setInvited([...invited, data.id]):setInvited(invited.filter(item=>item!==data.id))
     } 
-        
+
     return (
         <View style={{flex:1}}>
             <Background/>

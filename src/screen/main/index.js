@@ -4,15 +4,15 @@ import { MaterialCommunityIcons, MaterialIcons, Entypo, AntDesign, Ionicons } fr
 import axios from 'axios'
 
 import {Text, RowView} from 'styles'
-import color from 'colors'
-import Loading from 'components/Loading' 
+import color from 'colors' 
 import Login from './Login'
 import ServiceListView from 'components/ServiceListView' 
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
-import {getPost, getCategory} from 'hooks/useData'
+import {getPost, getCategory, updateUserProfile} from 'hooks/useData'
+import{ registerForPushNotificationsAsync } from 'middlewares/notification'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -30,25 +30,29 @@ const MenuModal = ({setMenu, visible})=>{
         <Modal transparent visible={visible}>
             <Pressable onPress={()=>setMenu(false)} style={{flex:1}} >
                 <View style={styles.menu}>
-                    <RowView style={styles.menuItems}>
-                        <MaterialIcons name="edit" size={24} color={color.inActive} />
-                        <Text>{'  '}Edit Profile</Text>
-                    </RowView>
-                    <RowView style={styles.menuItems}>
-                        <Entypo name="address" size={24} color={color.inActive} />
-                        <Text>{'  '}Change Address</Text>
-                    </RowView>
-                    <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.Language)}>
+                    <Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.Profile)}>
+                        <RowView style={styles.menuItems}>
+                            <MaterialIcons name="edit" size={24} color={color.inActive} />
+                            <Text>{'  '}Edit Profile</Text>
+                        </RowView>
+                    </Pressable>
+                    <Pressable android_ripple={{color:color.dark}}>
+                        <RowView style={styles.menuItems}>
+                            <Entypo name="address" size={24} color={color.inActive} />
+                            <Text>{'  '}Change Address</Text>
+                        </RowView>
+                    </Pressable>
+                    <Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.Language)}>
                         <RowView style={styles.menuItems}>
                             <Entypo name="language" size={24} color={color.inActive} />
                             <Text>{'  '}Language</Text>
                         </RowView>
                     </Pressable>
-                    <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.Setting)}>
+                    <Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.Setting)}>
                         <RowView style={styles.menuItems}>
                             <AntDesign name="setting" size={24} color={color.inActive}/>
                             <Text>{'  '}Setting</Text>
-                        </RowView>
+                         </RowView>
                     </Pressable>
                 </View>
             </Pressable>
@@ -57,7 +61,7 @@ const MenuModal = ({setMenu, visible})=>{
 
 const Index = () => {
     const {state:{auth}} = AuthConsumer()
-    const {setCat} = DataConsumer()
+    const {setCat, state:{profile}, Update} = DataConsumer()
     const ServiceStatus = ['Service', 'Product'] 
     const [active, setActive] = useState(ServiceStatus[0])
     const [loading, setLoading] = useState(false)
@@ -73,6 +77,9 @@ const Index = () => {
         const Category = await getCategory(token)
         setCategory(Category.data)
         setCat(Category.data)
+        const tokenNot = await registerForPushNotificationsAsync()
+        await updateUserProfile({token:tokenNot})
+        Update()
         setLoading(false); 
         setRefreshing(false)
     }
@@ -80,12 +87,11 @@ const Index = () => {
     useEffect(() => {
         let source = axios.CancelToken.source()
         setLoading(true)
-        loadData(source.token)
+        auth && loadData(source.token)
         return ()=>{
             source.cancel()
         }
     }, [active])
-
 
     const order = async ()=>{
         auth && RootNavigation.navigate(CONSTANT.AddOrder)
@@ -168,10 +174,11 @@ const styles = StyleSheet.create({
         backgroundColor:color.active,
         position:'absolute',
         bottom:0,
-        right:0,
         padding:PADDING,
         width:WIDTH,
         alignItems:'center',
+        alignItems:'center',
+        justifyContent:'center',
         height:70
     },
     contain:{
@@ -189,13 +196,13 @@ const styles = StyleSheet.create({
         right:25, 
         top:HEIGHT*.05, 
         backgroundColor: color.elevatedDark,
-        padding:10,
         borderRadius:5,
         width:WIDTH/1.8,
         elevation:5,
-        zIndex:5
+        zIndex:5,
+        paddingVertical:10
     },
     menuItems:{
-        paddingVertical:10
+        padding:10
     }
 })

@@ -3,6 +3,7 @@ import React, {useContext, useEffect, useReducer} from 'react'
 import CONSTANT from 'navigation/navigationConstant'
 
 import CONTEXT from './CONTEXT.json'
+import {AuthConsumer} from './auth'
 
 import {getUsersDetails, getCategory} from 'hooks/useData'
 
@@ -23,6 +24,7 @@ const reducer = (state, action)=>{
 
 const DataProvider = ({children})=>{
     const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
+    const {state:{auth}} =AuthConsumer()
 
     const Update = async ()=>{
         const {data}= await getUsersDetails()
@@ -31,10 +33,6 @@ const DataProvider = ({children})=>{
     const setCat = async (category)=>{
         dispatch({type:CONTEXT.CATEGORY, category})
     }
-
-    useEffect(()=>{
-        Update()
-    },[])
 
 
     return <Context.Provider value={{state, Update, setCat}}>

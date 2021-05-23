@@ -45,4 +45,9 @@ const updateProviderProfile = (id, data)=>{
     return instances.put(`Update/api/serviceProvider/${id}`,data)
 }
 
-export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById, updateOrder, updateProviderProfile}
+const updateUserProfile = async (data)=>{
+    const LINKUPS_USER_PHONE_NUMBER = await AsyncStorage.getItem(STORAGE_KEY_3)
+    return instances.put(`Update/api/users/${LINKUPS_USER_PHONE_NUMBER}`,data)
+}
+
+export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById, updateOrder, updateProviderProfile, updateUserProfile}

@@ -6,6 +6,7 @@
     "OrderDescription":"OrderDescription",
     "ServiceProfile":"ServiceProfile",
     "Invitation":"Invitation",
-    "Setting":"Setting"
+    "Setting":"Setting",
+    "Profile":"Profile"
     
 }

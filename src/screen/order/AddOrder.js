@@ -111,53 +111,58 @@ const AddOrder = () => {
                 <Loading/>
             :
             <>
+                <Background/>
+                { timing.name===undefined && <TimingSlot setTiming={setTiming} visible={timing}/>}
+                { problem.name === undefined && <Problem visible={problem} setProblem={setProblem}/>}
+                { Subcategory.name === undefined && <ScreenAddCategoryModal data={SubCatData()} Subcategory setCategory={setSubCategory} text={'Choose Services'} visible={Subcategory}/>}
+                { category.name === undefined && <ScreenAddCategoryModal data={CategoryData()} setCategory={setCategory} text={'Choose Service Category'} visible={category}/>}
 
-                    <Background/>
-                    { timing.name===undefined && <TimingSlot setTiming={setTiming} visible={timing}/>}
-                    { problem.name === undefined && <Problem visible={problem} setProblem={setProblem}/>}
-                    { Subcategory.name === undefined && <ScreenAddCategoryModal data={SubCatData()} Subcategory setCategory={setSubCategory} text={'Choose Services'} visible={Subcategory}/>}
-                    { category.name === undefined && <ScreenAddCategoryModal data={CategoryData()} setCategory={setCategory} text={'Choose Service Category'} visible={category}/>}
-
-                    <View style={{height:HEIGHT*.05}}/>
-                    <View style={{margin:20}}>
-                        <Text size={30} bold>Linkups</Text>
-                        <Text>Post Order</Text>
-                    </View>
-                    <View style={{margin:20}}>
-                        <TextActive active={category.name} setActive={setCategory}>
-                            <AntDesign name="customerservice" size={24} color={color.inActive} />
+                <View style={{height:HEIGHT*.05}}/>
+                <View style={{margin:20}}>
+                    <Text size={30} bold>Linkups</Text>
+                    <Text>Post Order</Text>
+                </View>
+                <ScrollView>
+                <View style={{margin:20, flex:1}}>
+                    <TextActive active={category.name} setActive={setCategory}>
+                        <AntDesign name="customerservice" size={24} color={color.inActive} />
+                    </TextActive>
+                    {
+                        category.name!==list[0] &&
+                        <TextActive active={Subcategory.name} setActive={setSubCategory}>
+                            <MaterialIcons name="category" size={24} color={color.inActive} />
                         </TextActive>
-                        {
-                            category.name!==list[0] &&
-                            <TextActive active={Subcategory.name} setActive={setSubCategory}>
-                                <MaterialIcons name="category" size={24} color={color.inActive} />
-                            </TextActive>
-                        }
-                        {
-                            Subcategory.name!==list[1] &&
-                            <TextActive active={timing.name} setActive={setTiming}>
-                                <Entypo name="time-slot" size={20} color={color.inActive} />
-                            </TextActive>
-                        }
-                        {
-                            timing.name!==list[2] &&
-                            <TextActive active={problem.name} setActive={setProblem}>
-                                <MaterialIcons name="report-problem" size={24} color={color.inActive} />
-                            </TextActive>
-                        }
-                        {
-                            problem.name!==list[3] &&
-                            <ImagePicker style={{...styles.TextActive, alignItems:'center', justifyContent:'center', paddingLeft:10}}>
-                                <RowView>
-                                    <Feather name="upload" size={30} color={color.active} />
-                                    <Text style={{marginLeft:10}}>Upload Image</Text>
-                                </RowView>
-                            </ImagePicker>
-                        }
-                    </View>
-                    <Pressable style={styles.Button} onPress={save}>
-                        <Text regular>Save</Text>
-                    </Pressable>
+                    }
+                    {
+                        Subcategory.name!==list[1] &&
+                        <TextActive active={timing.name} setActive={setTiming}>
+                            <Entypo name="time-slot" size={20} color={color.inActive} />
+                        </TextActive>
+                    }
+                    {
+                        timing.name!==list[2] &&
+                        <TextActive active={problem.name} setActive={setProblem}>
+                            <MaterialIcons name="report-problem" size={24} color={color.inActive} />
+                        </TextActive>
+                    }
+                    {
+                        problem.name!==list[3] &&
+                        <>
+                        <ImagePicker style={{...styles.TextActive, alignItems:'center', justifyContent:'center', paddingLeft:10}}>
+                            <RowView>
+                                <Feather name="upload" size={30} color={color.active} />
+                                <Text style={{marginLeft:10}}>Upload Image</Text>
+                            </RowView>
+                        </ImagePicker>
+                        <Text>{'\n'}</Text>
+                        <Text>{'\n'}</Text>
+                        </>
+                    }
+                </View>
+                </ScrollView>
+                <Pressable style={styles.Button} onPress={save}>
+                    <Text regular>Save</Text>
+                </Pressable>
             </>}
         </View>
 

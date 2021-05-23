@@ -4,7 +4,7 @@ import { AntDesign } from '@expo/vector-icons';
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
-import {signInWithPhoneNumber, confirmOTP, createUser} from 'hooks/useAuth'
+import {signInWithPhoneNumber, confirmOTP, createUser, signUpWithPhoneNumber} from 'hooks/useAuth'
 import {AuthConsumer} from 'context/auth'
 
 const WIDTH = Dimensions.get('screen').width
@@ -57,8 +57,8 @@ const Login = () => {
     const auth =async ()=>{
         if(!OTP){
             phone.length === 10 ? setOTP(true) : alert('Please Enter Correct Number')
-            await signInWithPhoneNumber(phone)
-                .then(response=> !response && setLogin(response))
+            const response = login ? await signInWithPhoneNumber(phone) : await signUpWithPhoneNumber(phone)
+            response.then(response=> !response && setLogin(response))
                 .catch(err=>setLogin(false))
         }else{
             const result = await confirmOTP(phone, OTP)
