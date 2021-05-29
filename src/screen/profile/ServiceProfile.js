@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Dimensions, Image, ScrollView, StatusBar, ImageBackground, Pressable } from 'react-native'
-import { AntDesign, MaterialCommunityIcons, Ionicons, Entypo, SimpleLineIcons, MaterialIcons} from '@expo/vector-icons'; 
+import { StyleSheet, View, Dimensions, Image, ScrollView, Pressable, BackHandler } from 'react-native'
+import { AntDesign, MaterialCommunityIcons, Ionicons, Entypo, MaterialIcons} from '@expo/vector-icons'; 
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
@@ -38,14 +38,14 @@ const Point = ({children, last=false, text})=><RowView style={{...styles.Points,
     <Text style={{marginLeft:10}}>{text}</Text>
 </RowView>
 
-const ServiceProfile = ({route}) => {
-    const {data, proposal, orderId, proposalData} = route.params
+const ServiceProfile = ({route, navigation}) => {
+    const {data, proposal, orderId, proposalData, invitation} = route.params
     const [loading, setLoading] = useState(false)
     const [pro, setPro] = useState('')
     const {state} = DataConsumer()
     useEffect(() => {
         const result = state.category.find(item=>item.id === data.category)
-        setPro(result.name)
+        setPro(result.name)        
     }, [])
     const accept = async ()=>{
         setLoading(true)
@@ -94,16 +94,19 @@ const ServiceProfile = ({route}) => {
 
                     <Text size={12} style={{margin:10, marginBottom:-5}}>Details</Text>
                     <View style={styles.contentContainer}>
-                        <Point>
+                        {!invitation && <Point>
                             <Entypo name="price-tag" size={24} color={color.active} />
                             <RowView style={{marginLeft:10}}>
                                 <Text>Price:</Text>
                                 <Text size={20} regular> {`₹ ${proposalData.price}`}</Text>
                             </RowView>
-                        </Point>
-                        <Point text={proposalData.date}>
-                            <MaterialIcons name="date-range" size={24} color={color.active} />
-                        </Point>
+                        </Point>}
+                        {
+                            !invitation && 
+                            <Point text={proposalData.date}>
+                                <MaterialIcons name="date-range" size={24} color={color.active} />
+                            </Point>
+                        }
                         <Point text={`+${data.id}`}>
                             <Ionicons name="call" size={24} color={color.active} /> 
                         </Point>

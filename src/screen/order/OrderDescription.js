@@ -87,14 +87,14 @@ const OrderDescription = ({route}) => {
 
     return (
         <View style={{flex:1}}>          
-                <View style={{height:HEIGHT*.05}}/>
+                <View style={{height:HEIGHT*.02}}/>
                 <Background/>
                 {review && <FeedBackScreen data={data} provider={provider}/>}
                 <View style={{margin:20, flex:1}}>
-                    <Text size={30} bold>Linkups</Text>
-                    <Text>Order Detail</Text>
+                    <Text size={20} bold>Linkups</Text>
+                    <Text size={13}>Order Detail</Text>
                     <ScrollView showsVerticalScrollIndicator={false}>    
-                        <View style={{marginTop:20}}>
+                        <View style={{marginTop:10}}>
                             <View style={{...styles.container, backgroundColor: '#0000'}}>
                                 <RowView style={{height:100}}>
                                     <Image source={{uri:SubCat.url}} style={{width:100, height:100}}/>

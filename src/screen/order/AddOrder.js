@@ -1,20 +1,22 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Dimensions, ScrollView, Image, Pressable, TextInput} from 'react-native'
+import { StyleSheet, View, Dimensions, ScrollView, Image, Pressable, TextInput, BackHandler, Alert} from 'react-native'
 import { MaterialIcons, Entypo, AntDesign, Feather } from '@expo/vector-icons';
 
 import ImagePicker from 'components/ImagePicker'
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
-import ScreenModal from 'components/ScreenModal'
 import Loading from 'components/Loading'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {getCategory} from 'hooks/useData'
+import Calendar from 'components/calendar'
+// import BackHandler from 'hooks/useBackHandler'
 
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
+const stateList = ['category', 'subCategory', 'problem', 'time']
 
 const Background = ()=>{
     return <View style={[{flex:1},StyleSheet.absoluteFillObject]}>
@@ -23,88 +25,90 @@ const Background = ()=>{
     </View>
 }
 
-const ScreenAddCategoryModal = ({visible, setCategory, text, data=[]})=>{
-    return <ScreenModal>
-        <Text>{text}</Text>
-        <ScrollView showsVerticalScrollIndicator={false} style={{marginTop:20}}>
-            {data.map((item)=><Pressable onPress={()=>setCategory(item)} key={item.id} style={styles.listView}>
-                <RowView style={styles.containContainer}>
-                    <Image source={{uri:item.url}} style={{height:90, width:90}}/>
-                    <Text bold size={20} style={{width:'50%'}} numberOfLines={2} adjustsFontSizeToFit>{item.name}</Text>
-                </RowView>
-            </Pressable>
-            )}
-        </ScrollView>
-    </ScreenModal>
+const CategoryListView = ({data={}, setSelect, setState})=>{
+    const _onPress = (item)=>{
+        setState(res=>({...res, category:item.id}))
+        setSelect(stateList[1])
+    }
+    return <View style={{padding:20}}>
+        <Text size={13} regular>Select Category</Text>
+        {
+            data.map(item=><Pressable onPress={()=>_onPress(item)} key={item.id} style={styles.contentContainer} android_ripple={{color:color.lightDark}}>
+                        <Image source={{uri:item.url}} style={{height:100, width:100}}/>
+                        <Text style={{marginLeft:10}} size={20} bold>{item.name}</Text>
+                </Pressable>
+            )
+        }
+    </View>
+}
+const SubCategoryListView = ({data={}, setSelect,state, setState})=>{
+    const _onPress = (item)=>{
+        setState(res=>({...res, subCategory:item.id}))
+        setSelect(stateList[2])
+    }
+    const sortList = data.find(item=>item.id === state.category)
+    return <View style={{padding:20}}>
+        <Text size={13} regular>{sortList.name}</Text>
+        {
+            sortList.subCategory.map(item=><Pressable onPress={()=>_onPress(item)} key={item.id} style={styles.contentContainer} android_ripple={{color:color.dark}}>
+                        <Image source={{uri:item.url}} style={{height:100, width:100}}/>
+                        <Text style={{marginLeft:10, width:'65%'}} size={15} bold>{item.name}</Text>
+                </Pressable>
+            )
+        }
+    </View>
 }
 
-const TextActive = ({active, setActive, children})=><Pressable onPress={()=>setActive({name:undefined})} style={{marginBottom:10}}>
-    <RowView style={styles.TextActive}>
-        <RowView>
-            {children}
-            <Text style={{marginLeft:10}}>{active}</Text>
-        </RowView>
-        <MaterialIcons name="arrow-drop-down" size={30} color={color.white} />
-    </RowView>
-</Pressable>
+const Time = ({setSelect,state, setState})=>{
+    const [date, setDate] =useState()
+    const [time, setTime] =useState()
+    const _onPress = (item)=>{
+        RootNavigation.navigate(CONSTANT.Invitation,{...state, time, date})
+    }
+    return <View style={{flex: 1,padding:10}}>
+        <Calendar date={date} setDate={setDate} time={time} setTime={setTime}/>
+        <Pressable onPress={_onPress} style={styles.Button}>
+            <Text>Save</Text>
+        </Pressable>
+    </View>
+}
 
-const TimingSlot = ({visible, setTiming})=>{
-    const timingSlot = ['12:00 Pm to 3:00 Pm', '3:00 Pm to 6:00 Pm', '6:00 Pm to 9:00 Pm', '9:00 Pm to 12:00 Am' ]
-    return <ScreenModal>
-        <Text>Choose Timing</Text>
+const Problem = ({data={}, setSelect,state, setState}) =>{
+    const problem = ['I Don\'t know?', 'Burning Problem', 'Short Circuit']
+    const _onPress =async (item)=>{
+        setState({...state, problem:item})
+        setSelect(stateList[3])
+    }
+    return <View style={{padding:20}}>
+        <Text size={13} regular>Problem Face</Text>
         {
-            timingSlot.map(item=><Pressable onPress={()=>setTiming({name:item})} key={item} style={styles.timing}>
+            problem.map(item=><Pressable onPress={()=>_onPress(item)} key={item} style={[styles.contentContainer, {padding:20, justifyContent:'center'}]} android_ripple={{color:color.dark}}>
                 <Text>{item}</Text>
             </Pressable>)
         }
-    </ScreenModal>
+    </View>
 }
 
-const Problem = ({visible, setProblem})=>{
-    const problem = ['Burning Smell', 'I Don\'t know', 'Short Circuit', 'Disconnect']
-    return <ScreenModal>
-        <Text>What's Problem</Text>
-        {
-            problem.map(item=>
-            <Pressable onPress={()=>setProblem({name:item})} key={item} style={styles.timing}>
-                <Text>{item}</Text>
-            </Pressable>)
-        }
-    </ScreenModal>
-}
-
-const AddOrder = () => {
-    var list = ['Choose Category', 'Choose Sub Category', 'Available Time', 'Problem Face']
-    const [category, setCategory] = useState({name : list[0]})
-    const [Subcategory, setSubCategory] = useState({name:list[1]})
-    const [timing, setTiming] = useState({name: list[2]})
-    const [problem, setProblem] = useState({name: list[3]})
+const AddOrder = ({navigation}) => {
     const [data, setData] = useState()
+    const [select, setSelect] = useState(stateList[0])
+    const [state, setState] = useState()
     const [loading, setLoading] = useState(true)
+    var index = stateList.indexOf(select)
     useEffect(()=>{
-
-        getCategory().then(({data})=>{
+        data===undefined && getCategory().then(({data})=>{
             setData(data);
             setLoading(false)
         })
+        const backAction = () => {
+            index>0 ? setSelect(stateList[index-1]):navigation.goBack()
+            return true
+        };
+      
+        const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+        return () => backHandler.remove();
 
-    },[])
-
-    const CategoryData = ()=>{
-        return data.map((item)=>(item))
-    }
-    const SubCatData=()=>{
-        return data.filter(item=>item.name===category.name)[0].subCategory
-    }
-    const save = ()=>{
-        const data = {
-            category:category.id,
-            subCategory:Subcategory.id,
-            problem:problem.name,
-            timing:timing.name
-        }
-        RootNavigation.navigate(CONSTANT.Invitation,data)
-    }
+    },[index])
     return (
         <View style={{flex:1}}>
             {loading ? 
@@ -112,57 +116,15 @@ const AddOrder = () => {
             :
             <>
                 <Background/>
-                { timing.name===undefined && <TimingSlot setTiming={setTiming} visible={timing}/>}
-                { problem.name === undefined && <Problem visible={problem} setProblem={setProblem}/>}
-                { Subcategory.name === undefined && <ScreenAddCategoryModal data={SubCatData()} Subcategory setCategory={setSubCategory} text={'Choose Services'} visible={Subcategory}/>}
-                { category.name === undefined && <ScreenAddCategoryModal data={CategoryData()} setCategory={setCategory} text={'Choose Service Category'} visible={category}/>}
-
-                <View style={{height:HEIGHT*.05}}/>
-                <View style={{margin:20}}>
-                    <Text size={30} bold>Linkups</Text>
-                    <Text>Post Order</Text>
+                <View style={{height:HEIGHT*.02}}/>
+                <View style={{margin:20, marginBottom:0}}>
+                    <Text size={20} bold>Linkups</Text>
+                    <Text size={13}>Post Order</Text>
                 </View>
-                <ScrollView>
-                <View style={{margin:20, flex:1}}>
-                    <TextActive active={category.name} setActive={setCategory}>
-                        <AntDesign name="customerservice" size={24} color={color.inActive} />
-                    </TextActive>
-                    {
-                        category.name!==list[0] &&
-                        <TextActive active={Subcategory.name} setActive={setSubCategory}>
-                            <MaterialIcons name="category" size={24} color={color.inActive} />
-                        </TextActive>
-                    }
-                    {
-                        Subcategory.name!==list[1] &&
-                        <TextActive active={timing.name} setActive={setTiming}>
-                            <Entypo name="time-slot" size={20} color={color.inActive} />
-                        </TextActive>
-                    }
-                    {
-                        timing.name!==list[2] &&
-                        <TextActive active={problem.name} setActive={setProblem}>
-                            <MaterialIcons name="report-problem" size={24} color={color.inActive} />
-                        </TextActive>
-                    }
-                    {
-                        problem.name!==list[3] &&
-                        <>
-                        <ImagePicker style={{...styles.TextActive, alignItems:'center', justifyContent:'center', paddingLeft:10}}>
-                            <RowView>
-                                <Feather name="upload" size={30} color={color.active} />
-                                <Text style={{marginLeft:10}}>Upload Image</Text>
-                            </RowView>
-                        </ImagePicker>
-                        <Text>{'\n'}</Text>
-                        <Text>{'\n'}</Text>
-                        </>
-                    }
-                </View>
-                </ScrollView>
-                <Pressable style={styles.Button} onPress={save}>
-                    <Text regular>Save</Text>
-                </Pressable>
+                {select===stateList[0] && <CategoryListView setSelect={setSelect} setState={setState} data={data}/>}
+                {select===stateList[1] && <SubCategoryListView state={state} setSelect={setSelect} setState={setState} data={data}/>}
+                {select===stateList[2] && <Problem state={state} setSelect={setSelect} setState={setState} data={data}/>}
+                {select===stateList[3] && <Time state={state} setSelect={setSelect} setState={setState}/>}
             </>}
         </View>
 
@@ -172,34 +134,6 @@ const AddOrder = () => {
 export default AddOrder
 
 const styles = StyleSheet.create({
-    listView:{
-        marginBottom:10,
-        borderRadius:20,
-        overflow:'hidden',
-        height:100
-    },
-    containContainer:{
-        width:'100%',
-        height: '100%',
-        justifyContent:'space-evenly',
-        backgroundColor: color.lightDark,
-    },
-    TextActive:{
-        backgroundColor: 'rgba(40, 49, 64,0.7)',
-        padding:10,
-        borderRadius:10,
-        paddingLeft: 20,
-        height:100,
-        justifyContent:'space-between'
-    },
-    timing:{
-        backgroundColor: color.lightDark,
-        padding: 10,
-        marginVertical:10,
-        borderRadius:10,
-        alignItems:'center',
-        justifyContent:'center'
-    },
     Button:{
         backgroundColor: color.active,
         position:'absolute',
@@ -209,15 +143,11 @@ const styles = StyleSheet.create({
         alignItems:'center',
         justifyContent:'center'
     },
-    OkayButton:{
-        backgroundColor: color.active,
-        padding: 10,
-        width:80,
-        borderRadius:5,
+    contentContainer:{
+        backgroundColor: 'rgba(34, 42, 56,0.8)',
+        marginVertical:10,
+        padding:10,
+        flexDirection:'row',
         alignItems:'center',
-        justifyContent:'center',
-        position:'absolute',
-        bottom:20,
-        right: 20,
-    }
+    },
 })

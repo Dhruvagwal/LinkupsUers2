@@ -21,9 +21,9 @@ const filter = ({setFilter,setFilterList, applyFilter, filterList}) => {
         <ScreenModal style={{padding:0, paddingVertical:20}}>
             {/* =========================== */}
             <View>
-                <Text  style={{marginHorizontal:20,color:color.active, letterSpacing:1.2}} size={20} bold>FILTER BY</Text>
+                <Text  style={{marginHorizontal:20,color:color.active}} size={20} bold>FILTER BY</Text>
                 <View style={{marginTop:10}}>
-                    <Text style={{marginHorizontal:20,color:color.blue, letterSpacing:1.2, marginHorizontal:20}} bold>STATUS</Text>
+                    <Text style={{marginHorizontal:20,color:color.blue, marginHorizontal:20}} size={13} bold>STATUS</Text>
                     <View style={{marginTop:10}}>
                         {
                             props.map(item=><CheckBox setFilterList={setFilterList} active={filterList.find(res=>res===item.value)} key={item.value} data={item} />)

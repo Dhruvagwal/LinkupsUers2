@@ -53,7 +53,6 @@ const Index = () => {
                       <Stack.Screen name={CONSTANT.Invitation} component={InvitationScreen}/>
                       <Stack.Screen name={CONSTANT.ServiceProfile} component={ServiceProfileScreen}/>
                       <Stack.Screen name={CONSTANT.Setting} component={SettingScreen}/>
-                      <Stack.Screen name={CONSTANT.Profile} component={userProfileScreen}/>
                     </>}
                 </Stack.Navigator>
             </NavigationContainer>

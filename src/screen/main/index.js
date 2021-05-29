@@ -7,9 +7,11 @@ import {Text, RowView} from 'styles'
 import color from 'colors' 
 import Login from './Login'
 import ServiceListView from 'components/ServiceListView' 
+import Carousel from 'components/carousel' 
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import Filter from './filter'
+import TimeDiff from 'middlewares/TimeDiff'
 import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
 import {getPost, getCategory, updateUserProfile} from 'hooks/useData'
@@ -26,47 +28,14 @@ const Background = ()=>{
     </View>
 }
 
-const MenuModal = ({setMenu, visible})=>{
-    return (
-        <Modal transparent visible={visible}>
-            <Pressable onPress={()=>setMenu(false)} style={{flex:1}} >
-                <View style={styles.menu}>
-                    <Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.Profile)}>
-                        <RowView style={styles.menuItems}>
-                            <MaterialIcons name="edit" size={24} color={color.inActive} />
-                            <Text>{'  '}Edit Profile</Text>
-                        </RowView>
-                    </Pressable>
-                    <Pressable android_ripple={{color:color.dark}}>
-                        <RowView style={styles.menuItems}>
-                            <Entypo name="address" size={24} color={color.inActive} />
-                            <Text>{'  '}Change Address</Text>
-                        </RowView>
-                    </Pressable>
-                    <Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.Language)}>
-                        <RowView style={styles.menuItems}>
-                            <Entypo name="language" size={24} color={color.inActive} />
-                            <Text>{'  '}Language</Text>
-                        </RowView>
-                    </Pressable>
-                    <Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.Setting)}>
-                        <RowView style={styles.menuItems}>
-                            <AntDesign name="setting" size={24} color={color.inActive}/>
-                            <Text>{'  '}Setting</Text>
-                         </RowView>
-                    </Pressable>
-                </View>
-            </Pressable>
-        </Modal>
-)}
 
-const Index = () => {
+const Index = ({route}) => {
     const {state:{auth}} = AuthConsumer()
+    const routes = route.params
     const {setCat, state:{profile}, Update} = DataConsumer()
     const ServiceStatus = ['Service', 'Product'] 
     const [active, setActive] = useState(ServiceStatus[0])
     const [loading, setLoading] = useState(false)
-    const [menu, setMenu] = useState(false)
     const [data, setData] = useState([])
     const [category, setCategory] = useState([])
     const [filter, setFilter] = useState(false)
@@ -77,31 +46,28 @@ const Index = () => {
         setRefreshing(true);
         const postData = await getPost("service", token)
         setData(postData.data)
-        const Category = await getCategory(token)
-        setCategory(Category.data)
-        setCat(Category.data)
+        if(category.length===0){
+            const Category = await getCategory(token)
+            setCategory(Category.data)
+            setCat(Category.data)
+        }
         const tokenNot = await registerForPushNotificationsAsync()
-        await updateUserProfile({token:tokenNot})
+        tokenNot !== profile.token && await updateUserProfile({token:tokenNot})
         Update()
         setLoading(false); 
         setRefreshing(false)
     }
-
     useEffect(() => {
         setLoading(true)
         if(active===ServiceStatus[0]){
             auth && loadData()
-        }else{
-            // console.log(data)
         }
-    }, [active])
-
+    }, [routes])
     const order = async ()=>{
         auth && RootNavigation.navigate(CONSTANT.AddOrder)
     }
 
     const applyFilter =async ()=>{
-        console.log(filterList)
         setRefreshing(true);
         setFilter(false) 
         const postData = await getPost("service")
@@ -120,38 +86,24 @@ const Index = () => {
             <Background/>
             {filter && <Filter filterList={filterList} applyFilter={applyFilter} setFilterList={setFilterList} setFilter={setFilter}/>}
             {/* ======================= */}
-            <View style={{height:HEIGHT*.05}}/>
+            <View style={{height:HEIGHT*.02}}/>
             {/* ======================== */}
-            <View style={{padding:PADDING, flex:1}}>
-                <RowView style={{marginBottom:30, justifyContent:'space-between'}}>
+            <View style={{flex:1, padding:20}}>
+                <RowView style={{marginBottom:20, justifyContent:'space-between'}}>
                     <View>
-                        <Text size={30} bold>Linkups</Text>
-                        <Text>Home</Text>
+                        <Text size={20} bold>Linkups</Text>
+                        <Text size={13}>Home</Text>
                     </View>
                     <RowView>
                         <Pressable onPress={()=>setFilter(true)} style={{padding:5}}>
                             <Ionicons name="filter-outline" size={30} color={color.white} />
                         </Pressable>
-                        <Pressable style={{padding:5}} onPress={()=>setMenu(!menu)}>
+                        <Pressable style={{padding:5, marginRight:-10}} onPress={()=>RootNavigation.navigate(CONSTANT.Setting)}>
                             <MaterialCommunityIcons name="dots-vertical" size={30} color={color.white}/>
                         </Pressable>
                     </RowView>
                 </RowView>
-                <MenuModal visible={menu} setMenu={setMenu}/>
                 {/* ====================== */}
-                <FlatList
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    data={ServiceStatus}
-                    style={{alignSelf:'center', flexGrow:0, marginBottom:20}}
-                    keyExtractor={(item)=>item}
-                    renderItem={({item})=>
-                    <Pressable onPress={()=>setActive(item)} key={item}>
-                        <Text style={{...styles.contain,backgroundColor:item===active?color.lightDark:'#0000', width:ServiceStatus.length<=2 ? WIDTH/ServiceStatus.length-20:150}}>{item}</Text>
-                        {item===active && <View style={styles.active}/>}
-                    </Pressable>}
-                />
-                {/* =============================== */}
                 {(active===ServiceStatus[0] && auth) && <>
                     <ScrollView 
                         showsVerticalScrollIndicator={false} 
@@ -164,21 +116,27 @@ const Index = () => {
                             />
                         }
                     >
+                        <Carousel/>
                         {loading ?<View style={{height:HEIGHT*.5, alignItems:'center', justifyContent:'center'}}/>
-                        :
-                            data.map(item=><ServiceListView data={item} category={category} status={active} key={item.id}/>)
+                        :   <>
+                            <Text style={{marginTop:20}} size={13} regular>Your Orders</Text>
+                            {data
+                                .sort((a,b)=>TimeDiff(a.postedAt).minutes-TimeDiff(b.postedAt).minutes)
+                                .map(
+                                    item=>
+                                        <ServiceListView data={item} category={category} status={active} key={item.id}/>
+                                    )
+                            }
+                        </>
                         }
                         <Text>{'\n'}</Text>
                     </ScrollView>
                     {/* ======================= */}
-                        <Pressable onPress={order} style={styles.PostButton}>
+                        <Pressable onPress={order} android_ripple={{color:'#e86247'}} style={styles.PostButton}>
                             <Text regular>Place {active}</Text>
                         </Pressable>
                     </>
                 }
-                {(active===ServiceStatus[1] && auth) && <View>
-                    <Text>Dhruv</Text>
-                </View>}
             </View>
         </View>
     )

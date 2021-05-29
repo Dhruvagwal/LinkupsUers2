@@ -1,5 +1,8 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+
+import { Text, RowView } from 'styles'
+import color from 'colors'
 
 const userProfile = () => {
     return (
