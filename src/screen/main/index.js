@@ -91,7 +91,7 @@ const Index = ({route}) => {
                 <RowView style={{marginBottom:20, justifyContent:'space-between'}}>
                     <View>
                         <Text size={20} bold>Linkups</Text>
-                        <Text size={13}>Hom</Text>
+                        <Text size={13}>Homes update</Text>
                     </View>
                     <RowView>
                         <Pressable onPress={()=>setFilter(true)} style={{padding:5}}>
