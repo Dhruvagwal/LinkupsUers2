@@ -10,10 +10,10 @@ import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 
 
-const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalData={}}) => {
+const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalData={}, invitation=false}) => {
     const IMAGE_SIZE = 90
     return (
-        <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile, {data, proposal, orderId, proposalData})}>
+        <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile, {data, proposal, orderId, proposalData, invitation})}>
             <RowView style={styles.container}>
                 <Image source={{uri:data.url}} style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:10}}/>
                 <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'75%'}}>
@@ -27,9 +27,9 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalD
                             <Text> 4.5</Text>
                         </RowView>
                     </RowView>
-                    <Text size={20} regular>₹ {proposalData.price}</Text>
+                    {!invitation && <Text size={20} regular>₹ {proposalData.price}</Text>}
                     <RowView style={{justifyContent:'space-between'}}>
-                        <Text>Deliver: {proposalData.date}</Text>
+                        {!invitation && <Text>Deliver: {proposalData.date}</Text>}
                         <Pressable style={styles.Call}>
                             <Ionicons name="call" size={24} color={color.white} />
                         </Pressable>

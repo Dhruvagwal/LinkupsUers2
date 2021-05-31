@@ -5,6 +5,7 @@ import LottieView from 'lottie-react-native'
 import {Text, RowView} from 'styles'
 import color from 'colors'
 import ScreenModal from 'components/ScreenModal'
+import Loading from 'components/Loading'
 import {updateProviderProfile} from 'hooks/useData'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
@@ -26,12 +27,15 @@ const FeedBack = ({data, provider}) => {
     const Rating = [1,2,3,4]
     const [active, setActive] =useState()
     const [text, setText] = useState()
+    const [loading, setLoading] = useState(false)
 
     const Submit=async ()=>{
+        setLoading(true)
         const FeedBackData = {id:data.user, rating:active, review:text}
         const rating = provider.rating === undefined ? [FeedBackData] : [...provider.rating,FeedBackData ]
         await updateProviderProfile(provider.id,{rating})
-        RootNavigation.navigate(CONSTANT.Home)
+        RootNavigation.navigate(CONSTANT.Home, {load:true})
+        setLoading(false)
     }
 
     
@@ -54,9 +58,10 @@ const FeedBack = ({data, provider}) => {
                 onChangeText={setText}
                 value={text}
             />
-            <Pressable onPress={Submit} style={{backgroundColor: color.active, alignSelf:'flex-end', padding:10, borderRadius:10}}>
+            {!loading?<Pressable onPress={Submit} style={{backgroundColor: color.active, alignSelf:'flex-end', padding:10, borderRadius:10}}>
                 <Text regular>Submit</Text>
-            </Pressable>
+            </Pressable>:
+            <Loading whole={false}/>}
         </ScreenModal>
     )
 }

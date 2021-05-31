@@ -9,6 +9,8 @@ import Loading from 'components/Loading'
 import { updateOrder } from 'hooks/useData'
 import {DataConsumer} from 'context/data'
 import { sendPushNotification } from 'middlewares/notification'
+import * as RootNavigation from 'navigation/RootNavigation'
+import CONSTANT from 'navigation/navigationConstant'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -42,7 +44,7 @@ const ServiceProfile = ({route, navigation}) => {
     const {data, proposal, orderId, proposalData, invitation} = route.params
     const [loading, setLoading] = useState(false)
     const [pro, setPro] = useState('')
-    const {state} = DataConsumer()
+    const {state, setLoad} = DataConsumer()
     useEffect(() => {
         const result = state.category.find(item=>item.id === data.category)
         setPro(result.name)        
@@ -60,6 +62,7 @@ const ServiceProfile = ({route, navigation}) => {
         }
         await updateOrder(updateData, orderId)
         await sendPushNotification(data.token, notifyData)
+        navigation.navigate(CONSTANT.Home,{load:true})
         setLoading(false)
     }
     return (

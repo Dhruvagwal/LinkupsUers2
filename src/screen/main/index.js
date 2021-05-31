@@ -79,7 +79,6 @@ const Index = ({route}) => {
         }
         setRefreshing(false);
     }
-    
     return (
         <View style={{flex:1}}>
             {!auth && <Login/>}
@@ -116,11 +115,11 @@ const Index = ({route}) => {
                             />
                         }
                     >
-                        <Carousel/>
+                        {/* <Carousel/> */}
                         {loading ?<View style={{height:HEIGHT*.5, alignItems:'center', justifyContent:'center'}}/>
                         :   <>
-                            <Text style={{marginTop:20}} size={13} regular>Your Orders</Text>
-                            {data
+                            {data.length !==0 && <Text style={{marginTop:20}} size={13} regular>Your Orders</Text>}
+                            { data
                                 .sort((a,b)=>TimeDiff(a.postedAt).minutes-TimeDiff(b.postedAt).minutes)
                                 .map(
                                     item=>

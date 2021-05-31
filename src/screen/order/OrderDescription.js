@@ -38,11 +38,14 @@ const OrderDescription = ({route}) => {
     const [review, setReview] = useState(false)
     const [provider, setProvider] = useState([])
     const [loading, setLoading] = useState(true)
+    const [miniLoading, setMiniLoading] = useState(false)
     const status = ['posted', 'inprogress', 'completed', 'paid']
 
     const Delete =async ()=>{
+        setMiniLoading(true)
         await deleteData('order',data.id)
-        RootNavigation.navigate(CONSTANT.Home)
+        RootNavigation.navigate(CONSTANT.Home,{load:true})
+        setMiniLoading(false)
     }
 
     const checkout =async ()=>{
@@ -83,7 +86,7 @@ const OrderDescription = ({route}) => {
                 setLoading(false)
             })
         }
-    }, [])
+    }, [route.params])
 
     return (
         <View style={{flex:1}}>          
@@ -100,8 +103,8 @@ const OrderDescription = ({route}) => {
                                     <Image source={{uri:SubCat.url}} style={{width:100, height:100}}/>
                                     <View style={{alignItems:'flex-start', height:100, marginLeft:10, justifyContent:'space-between'}}>
                                         <Text style={{width:WIDTH*.6}} bold numberOfLines={2} adjustsFontSizeToFit>{SubCat.name}</Text>
-                                        <Text size={13}>Status:<Text regular style={{textTransform:'capitalize'}} size={13}> {data.status}</Text></Text>
-                                        <Text size={13}>{data.info.timing}</Text>
+                                        <Text size={13}>Status:<Text regular style={{textTransform:'capitalize', color:color.active}} size={13}> {data.status}</Text></Text>
+                                        <Text size={13}>{moment(data.postedAt).format('LLL')}</Text>
                                     </View>
                                 </RowView>
                             </View>
@@ -111,6 +114,9 @@ const OrderDescription = ({route}) => {
                                     <AntDesign name="customerservice" size={24} color={color.active} />
                                 </Point>
                                 <Point text={'Delievery'}>
+                                    <MaterialCommunityIcons name="truck-delivery" size={24} color={color.active} />
+                                </Point>
+                                <Point text={`${moment(data.postedAt).format('LL')} ${data.info.time}`}>
                                     <MaterialCommunityIcons name="truck-delivery" size={24} color={color.active} />
                                 </Point>
                                 <Point text={data.id}>
@@ -133,7 +139,7 @@ const OrderDescription = ({route}) => {
                                         {invited.length>0 && <View style={{marginTop:10}}>
                                             <Text style={{margin:10}} size={12}>Invited</Text>
                                             {
-                                                invited.map(item=><ServiceProviderListView key={Math.random().toString()} data={item}/>)
+                                                invited.map(item=><ServiceProviderListView key={Math.random().toString()} data={item} invitation/>)
                                             }
                                         </View>}
                                         </>:
@@ -148,12 +154,20 @@ const OrderDescription = ({route}) => {
                             }
                         </View>
                         <Text>{'\n'}</Text>
-                        {data.status===status[0] && <Pressable onPress={Delete}>
-                            <RowView style={{...styles.container, opacity:1, padding:20, alignItems:'center', justifyContent:'center'}}>
-                            <MaterialCommunityIcons name="delete" size={24} color={color.red}/>
-                                <Text style={{color:color.red}} regular>Delete</Text>
-                            </RowView>
-                        </Pressable>}
+                        {!miniLoading ?
+                            <>
+                                {data.status===status[0] && <Pressable onPress={Delete}>
+                                    <RowView style={{...styles.container, opacity:1, padding:20, alignItems:'center', justifyContent:'center'}}>
+                                    <MaterialCommunityIcons name="delete" size={24} color={color.red}/>
+                                        <Text style={{color:color.red}} regular>Delete</Text>
+                                    </RowView>
+                                </Pressable>}
+                            </>
+                            :
+                            <View>
+                                <Loading whole={false}/>
+                            </View>
+                        }
                     </ScrollView>
                 </View>
                 {
