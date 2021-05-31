@@ -62,7 +62,7 @@ const ServiceProfile = ({route, navigation}) => {
         }
         await updateOrder(updateData, orderId)
         await sendPushNotification(data.token, notifyData)
-        navigation.navigate(CONSTANT.Home,{load:true})
+        navigation.navigate(CONSTANT.Library,{load:true})
         setLoading(false)
     }
     return (

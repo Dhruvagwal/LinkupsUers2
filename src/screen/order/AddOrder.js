@@ -16,7 +16,7 @@ import Calendar from 'components/calendar'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
-const stateList = ['category', 'subCategory', 'problem', 'time']
+const stateList = ['subCategory', 'problem', 'time']
 
 const Background = ()=>{
     return <View style={[{flex:1},StyleSheet.absoluteFillObject]}>
@@ -25,32 +25,15 @@ const Background = ()=>{
     </View>
 }
 
-const CategoryListView = ({data={}, setSelect, setState})=>{
-    const _onPress = (item)=>{
-        setState(res=>({...res, category:item.id}))
-        setSelect(stateList[1])
-    }
-    return <View style={{padding:20}}>
-        <Text size={13} regular>Select Category</Text>
-        {
-            data.map(item=><Pressable onPress={()=>_onPress(item)} key={item.id} style={styles.contentContainer} android_ripple={{color:color.lightDark}}>
-                        <Image source={{uri:item.url}} style={{height:100, width:100}}/>
-                        <Text style={{marginLeft:10}} size={20} bold>{item.name}</Text>
-                </Pressable>
-            )
-        }
-    </View>
-}
 const SubCategoryListView = ({data={}, setSelect,state, setState})=>{
     const _onPress = (item)=>{
         setState(res=>({...res, subCategory:item.id}))
-        setSelect(stateList[2])
+        setSelect(stateList[1])
     }
-    const sortList = data.find(item=>item.id === state.category)
     return <View style={{padding:20}}>
-        <Text size={13} regular>{sortList.name}</Text>
+        <Text size={13} regular>{data.name}</Text>
         {
-            sortList.subCategory.map(item=><Pressable onPress={()=>_onPress(item)} key={item.id} style={styles.contentContainer} android_ripple={{color:color.dark}}>
+            data.subCategory.map(item=><Pressable onPress={()=>_onPress(item)} key={item.id} style={styles.contentContainer} android_ripple={{color:color.dark}}>
                         <Image source={{uri:item.url}} style={{height:100, width:100}}/>
                         <Text style={{marginLeft:10, width:'65%'}} size={15} bold>{item.name}</Text>
                 </Pressable>
@@ -73,11 +56,11 @@ const Time = ({setSelect,state, setState})=>{
     </View>
 }
 
-const Problem = ({data={}, setSelect,state, setState}) =>{
+const Problem = ({setSelect,state, setState, subCategory}) =>{
     const problem = ['I Don\'t know?', 'Burning Problem', 'Short Circuit']
     const _onPress =async (item)=>{
         setState({...state, problem:item})
-        setSelect(stateList[3])
+        subCategory === undefined ?  setSelect(stateList[2]) : setSelect(stateList[1])
     }
     return <View style={{padding:20}}>
         <Text size={13} regular>Problem Face</Text>
@@ -89,17 +72,13 @@ const Problem = ({data={}, setSelect,state, setState}) =>{
     </View>
 }
 
-const AddOrder = ({navigation}) => {
-    const [data, setData] = useState()
+const AddOrder = ({navigation, route}) => {
+    const {category, subCategory} = route.params
+    const [data, setData] = useState(category)
     const [select, setSelect] = useState(stateList[0])
-    const [state, setState] = useState()
-    const [loading, setLoading] = useState(true)
+    const [state, setState] = useState({category:category.id,subCategory:subCategory !== undefined ? subCategory.id :undefined})
     var index = stateList.indexOf(select)
     useEffect(()=>{
-        data===undefined && getCategory().then(({data})=>{
-            setData(data);
-            setLoading(false)
-        })
         const backAction = () => {
             index>0 ? setSelect(stateList[index-1]):navigation.goBack()
             return true
@@ -109,11 +88,9 @@ const AddOrder = ({navigation}) => {
         return () => backHandler.remove();
 
     },[index])
+    console.log(state)
     return (
         <View style={{flex:1}}>
-            {loading ? 
-                <Loading/>
-            :
             <>
                 <Background/>
                 <View style={{height:HEIGHT*.02}}/>
@@ -121,11 +98,20 @@ const AddOrder = ({navigation}) => {
                     <Text size={20} bold>Linkups</Text>
                     <Text size={13}>Post Order</Text>
                 </View>
-                {select===stateList[0] && <CategoryListView setSelect={setSelect} setState={setState} data={data}/>}
-                {select===stateList[1] && <SubCategoryListView state={state} setSelect={setSelect} setState={setState} data={data}/>}
-                {select===stateList[2] && <Problem state={state} setSelect={setSelect} setState={setState} data={data}/>}
-                {select===stateList[3] && <Time state={state} setSelect={setSelect} setState={setState}/>}
-            </>}
+                {
+                    subCategory=== undefined ?
+                    <>
+                        {select===stateList[0] && <SubCategoryListView state={state} setSelect={setSelect} setState={setState} data={data}/>}
+                        {select===stateList[1] && <Problem state={state} setSelect={setSelect} setState={setState} data={data}/>}
+                        {select===stateList[2] && <Time state={state} setSelect={setSelect} setState={setState}/>}
+                    </>
+                    :
+                    <>
+                        {select===stateList[0] && <Problem subCategory={subCategory} state={state} setSelect={setSelect} setState={setState} data={data}/>}
+                        {select===stateList[1] && <Time state={state} setSelect={setSelect} setState={setState}/>}
+                    </>
+                }
+            </>
         </View>
 
     )

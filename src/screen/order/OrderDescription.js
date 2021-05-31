@@ -44,7 +44,7 @@ const OrderDescription = ({route}) => {
     const Delete =async ()=>{
         setMiniLoading(true)
         await deleteData('order',data.id)
-        RootNavigation.navigate(CONSTANT.Home,{load:true})
+        RootNavigation.navigate(CONSTANT.Library,{load:true})
         setMiniLoading(false)
     }
 

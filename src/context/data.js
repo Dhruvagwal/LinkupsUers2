@@ -19,6 +19,8 @@ const reducer = (state, action)=>{
             return {...state, category:action.category}
         case CONTEXT.LOAD:
             return {...state, load:action.load}
+        case CONTEXT.SET_NAME:
+            return {...state, currentRouteName: action.currentRouteName}
         default:
             return state
     }
@@ -38,9 +40,12 @@ const DataProvider = ({children})=>{
     const setLoad = async (load)=>{
         dispatch({type:CONTEXT.LOAD, load})
     }
+    const setName = (currentRouteName)=>{
+        dispatch({type:CONTEXT.SET_NAME, currentRouteName})
+    }
 
 
-    return <Context.Provider value={{state, Update, setCat, setLoad}}>
+    return <Context.Provider value={{state, Update, setCat, setLoad, setName}}>
         {children}
     </Context.Provider>
 }

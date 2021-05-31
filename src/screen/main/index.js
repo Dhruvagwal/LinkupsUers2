@@ -6,12 +6,10 @@ import axios from 'axios'
 import {Text, RowView} from 'styles'
 import color from 'colors' 
 import Login from './Login'
-import ServiceListView from 'components/ServiceListView' 
-import Carousel from 'components/carousel' 
+import BottomBar from 'components/BottomBar'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
-import Filter from './filter'
-import TimeDiff from 'middlewares/TimeDiff'
+import Filter from '../Library/filter'
 import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
 import {getPost, getCategory, updateUserProfile} from 'hooks/useData'
@@ -36,7 +34,6 @@ const Index = ({route}) => {
     const ServiceStatus = ['Service', 'Product'] 
     const [active, setActive] = useState(ServiceStatus[0])
     const [loading, setLoading] = useState(false)
-    const [data, setData] = useState([])
     const [category, setCategory] = useState([])
     const [filter, setFilter] = useState(false)
     const [refreshing, setRefreshing] = React.useState(false);
@@ -44,8 +41,6 @@ const Index = ({route}) => {
 
     const loadData = async (token)=>{
         setRefreshing(true);
-        const postData = await getPost("service", token)
-        setData(postData.data)
         if(category.length===0){
             const Category = await getCategory(token)
             setCategory(Category.data)
@@ -66,7 +61,6 @@ const Index = ({route}) => {
     const order = async ()=>{
         auth && RootNavigation.navigate(CONSTANT.AddOrder)
     }
-
     const applyFilter =async ()=>{
         setRefreshing(true);
         setFilter(false) 
@@ -87,56 +81,43 @@ const Index = ({route}) => {
             {/* ======================= */}
             <View style={{height:HEIGHT*.02}}/>
             {/* ======================== */}
-            <View style={{flex:1, padding:20}}>
-                <RowView style={{marginBottom:20, justifyContent:'space-between'}}>
+            <View style={{flex:1}}>
+                <RowView style={{justifyContent:'space-between', padding:20}}>
                     <View>
                         <Text size={20} bold>Linkups</Text>
-                        <Text size={13}>Homes update</Text>
+                        <Text size={13}>Home</Text>
                     </View>
-                    <RowView>
-                        <Pressable onPress={()=>setFilter(true)} style={{padding:5}}>
-                            <Ionicons name="filter-outline" size={30} color={color.white} />
-                        </Pressable>
-                        <Pressable style={{padding:5, marginRight:-10}} onPress={()=>RootNavigation.navigate(CONSTANT.Setting)}>
-                            <MaterialCommunityIcons name="dots-vertical" size={30} color={color.white}/>
-                        </Pressable>
-                    </RowView>
                 </RowView>
-                {/* ====================== */}
-                {(active===ServiceStatus[0] && auth) && <>
-                    <ScrollView 
-                        showsVerticalScrollIndicator={false} 
-                        style={{flex:1}} 
-                        refreshControl={
-                            <RefreshControl
-                                refreshing={refreshing}
-                                onRefresh={loadData}
-                                color={[color.active]}
-                            />
-                        }
-                    >
-                        {/* <Carousel/> */}
-                        {loading ?<View style={{height:HEIGHT*.5, alignItems:'center', justifyContent:'center'}}/>
-                        :   <>
-                            {data.length !==0 && <Text style={{marginTop:20}} size={13} regular>Your Orders</Text>}
-                            { data
-                                .sort((a,b)=>TimeDiff(a.postedAt).minutes-TimeDiff(b.postedAt).minutes)
-                                .map(
-                                    item=>
-                                        <ServiceListView data={item} category={category} status={active} key={item.id}/>
+                <ScrollView>
+                    <View style={styles.topContainer} >
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                            {
+                                category.map(item=><Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.AddOrder, {category:item})} key={item.id} style={{alignItems:'center', padding:10, width:WIDTH/2-20}}>
+                                    <Image source={{uri:item.url}} style={{width:70, height:70}}/>
+                                    <Text size={13}>{item.name}</Text>
+                                </Pressable>)
+                            }                                                                                                                                                                                           
+                        </ScrollView>
+                    </View>
+                    {/* <Carousel/> */}
+                    {
+                        category.map(res=><View key={res.id} style={styles.middleContainer}>
+                            {res.subCategory && <Text size={13} style={{marginHorizontal:20}}>From {res.name}s</Text>}
+                            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                                {
+                                    res.subCategory && res.subCategory.map(item=>
+                                        <Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.AddOrder, {category:res, subCategory:item})} key={item.id} style={styles.subCategory}>
+                                            <Image source={{uri:item.url}} style={{width:70, height:70}}/>
+                                            <Text size={13} style={{marginHorizontal:10, width:'60%'}} numberOfLines={2}>{item.name}</Text>
+                                        </Pressable>
                                     )
-                            }
-                        </>
-                        }
-                        <Text>{'\n'}</Text>
-                    </ScrollView>
-                    {/* ======================= */}
-                        <Pressable onPress={order} android_ripple={{color:'#e86247'}} style={styles.PostButton}>
-                            <Text regular>Place {active}</Text>
-                        </Pressable>
-                    </>
-                }
+                                }
+                            </ScrollView>
+                        </View>)
+                    }
+                </ScrollView>
             </View>
+            <BottomBar/>
         </View>
     )
 }
@@ -178,5 +159,27 @@ const styles = StyleSheet.create({
     },
     menuItems:{
         padding:10
+    },
+    topContainer:{
+        backgroundColor: 'rgba(34, 42, 56,0.8)',
+        padding:10,
+        borderRadius:10,
+        flexDirection:'row',
+        justifyContent:'space-around',
+        marginBottom:40,
+        margin:10
+    },
+    middleContainer:{
+        marginBottom:20
+    },
+    subCategory:{
+        flexDirection:'row',
+        alignItems:'center',
+        backgroundColor: 'rgba(34, 42, 56,0.8)',
+        borderRadius:10,
+        padding:10,
+        marginVertical:10,
+        marginHorizontal:10,
+        width:WIDTH/1.7,
     }
 })

@@ -9,6 +9,7 @@ import {Logout} from 'hooks/useAuth'
  
 import {Text, RowView} from 'styles'
 import color from 'colors'
+import BottomBar from '/components/BottomBar';
 
 const HEIGHT =Dimensions.get('screen').height
 const WIDTH =Dimensions.get('screen').width
@@ -83,12 +84,14 @@ const Index = () => {
                             <Foundation name="info" size={24} color={color.white} style={{marginLeft:5}} />
                             <Text>   About Us</Text>
                         </Options>
+                        <Options onPress={LOGOUT}>
+                            <MaterialIcons name="exit-to-app" size={24} color={color.red} style={{marginLeft:5}} />
+                            <Text style={{color:color.red}} regular>   Logout</Text>
+                        </Options>
                     </View>
                 </View>
             </View>
-            <Pressable onPress={LOGOUT} style={styles.Logout}>
-                <Text bold>LOGOUT</Text>
-            </Pressable>
+            <BottomBar/>
         </View>
     )
 }
@@ -96,18 +99,6 @@ const Index = () => {
 export default Index
 
 const styles = StyleSheet.create({
-    Logout:{
-        position:'absolute',
-        bottom:10,
-        backgroundColor: color.red,
-        alignSelf:'center',
-        width:'90%',
-        padding:10,
-        margin:10,
-        alignItems:'center',
-        justifyContent:'center',
-        borderRadius:10
-    },
     camera:{
         backgroundColor: color.active,
         padding:10,
