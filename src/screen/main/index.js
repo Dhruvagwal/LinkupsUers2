@@ -5,12 +5,11 @@ import axios from 'axios'
 
 import {Text, RowView} from 'styles'
 import color from 'colors' 
-import Login from './Login'
 import BottomBar from 'components/BottomBar'
-import Carousel from 'components/carousel'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import Filter from '../Library/filter'
+import Loading from 'components/Loading'
 import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
 import {getPost, getCategory, updateUserProfile} from 'hooks/useData'
@@ -34,7 +33,6 @@ const Index = ({route}) => {
     const {setCat, state:{profile}, Update} = DataConsumer()
     const ServiceStatus = ['Service', 'Product'] 
     const [active, setActive] = useState(ServiceStatus[0])
-    const [loading, setLoading] = useState(false)
     const [category, setCategory] = useState([])
     const [filter, setFilter] = useState(false)
     const [refreshing, setRefreshing] = React.useState(false);
@@ -50,18 +48,14 @@ const Index = ({route}) => {
         const tokenNot = await registerForPushNotificationsAsync()
         tokenNot !== profile.token && await updateUserProfile({token:tokenNot})
         Update()
-        setLoading(false); 
         setRefreshing(false)
     }
     useEffect(() => {
-        setLoading(true)
         if(active===ServiceStatus[0]){
             auth && loadData()
         }
     }, [routes])
-    const order = async ()=>{
-        auth && RootNavigation.navigate(CONSTANT.AddOrder)
-    }
+
     const applyFilter =async ()=>{
         setRefreshing(true);
         setFilter(false) 
@@ -76,7 +70,6 @@ const Index = ({route}) => {
     }
     return (
         <View style={{flex:1}}>
-            {!auth && <Login/>}
             <Background/>
             {filter && <Filter filterList={filterList} applyFilter={applyFilter} setFilterList={setFilterList} setFilter={setFilter}/>}
             {/* ======================= */}
@@ -89,14 +82,14 @@ const Index = ({route}) => {
                         <Text size={13}>Home</Text>
                     </View>
                 </RowView>
-                <ScrollView>
+                {!refreshing ? <ScrollView>
                     <Text style={{marginHorizontal:10}} size={13}>Book Now :</Text>
                     <View style={styles.topContainer} >
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                             {
                                 category.map(item=><Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.AddOrder, {category:item})} key={item.id} style={{alignItems:'center', padding:10, width:WIDTH/2-20}}>
                                     <Image source={{uri:item.url}} style={{width:70, height:70}}/>
-                                    <Text size={13} regular>{item.name}</Text>
+                                    <Text size={13} bold>{item.name}</Text>
                                 </Pressable>)
                             }                                                                                                                                                                                           
                                                                                                                                                           
@@ -110,14 +103,14 @@ const Index = ({route}) => {
                                     res.subCategory && res.subCategory.map(item=>
                                         <Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.AddOrder, {category:res, subCategory:item})} key={item.id} style={styles.subCategory}>
                                             <Image source={{uri:item.url}} style={{width:70, height:70}}/>
-                                            <Text size={13} style={{marginHorizontal:10, width:'60%'}} numberOfLines={2}>{item.name}</Text>
+                                            <Text size={18} bold style={{marginHorizontal:10, width:'60%'}} numberOfLines={2}>{item.name}</Text>
                                         </Pressable>
                                     )
                                 }
                             </ScrollView>
                         </View>)
                     }
-                </ScrollView>
+                </ScrollView>:<Loading/>}
             </View>
             <BottomBar/>
         </View>

@@ -44,14 +44,13 @@ const InvitationService = ({onPress, data})=>{
                     {
                         !pressed ? <Pressable onPress={()=>{setPressed(true); onPress(data)}} style={[styles.InviteButton,{backgroundColor: color.active,}]}>
                             <Text regular>Send Invite</Text>
-                        </Pressable> : <RowView>
+                        </Pressable> :
                             <Pressable onPress={()=>{setPressed(false); onPress(data)}} style={styles.InviteButton}>
                                 <RowView regular style={{color:color.inActive}}>
                                     <Ionicons name="checkmark-done" size={24} color={color.inActive} />
                                     <Text>{' '}Invited</Text>
                                 </RowView>
                             </Pressable>
-                        </RowView>
                     }
                 </View>
             </RowView>
@@ -160,7 +159,8 @@ const styles = StyleSheet.create({
         backgroundColor:color.lightDark, 
         padding:5, 
         alignItems:'center', 
-        width:200, 
+        width:170,
+        alignSelf:'center', 
         height:45, 
         justifyContent:'center', 
         alignItems:'center'

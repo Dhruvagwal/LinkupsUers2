@@ -12,7 +12,7 @@ const BottomBar = () => {
     const {state:{currentRouteName}} = DataConsumer()
     return (
         <View style={styles.container}>
-            <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.Home)} style={styles.option}>
+            <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.Home, {laod:true})} style={styles.option}>
                 <Entypo name="home" size={30} color={CONSTANT.Home === currentRouteName ? color.active : color.inActive} />
             </Pressable>
             <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.Library)} style={styles.option}>
@@ -29,16 +29,14 @@ export default BottomBar
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor: color.dark,
+        backgroundColor: '#0000',
         position: 'absolute',
         bottom:0,
         width:'100%',
-        height:80,
-        borderTopLeftRadius:30,
-        borderTopRightRadius:30,
+        height:50,
         flexDirection:'row',
         justifyContent:'space-around',
-        alignItems:'center'
+        alignItems:'flex-end'
     },
     option:{
         flexDirection:'row',

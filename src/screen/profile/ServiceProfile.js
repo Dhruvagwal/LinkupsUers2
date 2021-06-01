@@ -122,12 +122,12 @@ const ServiceProfile = ({route, navigation}) => {
                     </View>
 
 
-                    <View style={{marginTop:10}}>
+                    {data.rating && <View style={{marginTop:10}}>
                         <Text size={12} style={{margin:10, marginBottom:-5}}>Customer Reviews</Text>
                         {
-                            data.rating.map(item=><Review key={Math.random().toString()} data={item}/>)
+                            data.rating && data.rating.map(item=><Review key={Math.random().toString()} data={item}/>)
                         }
-                    </View>
+                    </View>}
 
                     
                     <Text>{'\n'}</Text>

@@ -88,7 +88,6 @@ const AddOrder = ({navigation, route}) => {
         return () => backHandler.remove();
 
     },[index])
-    console.log(state)
     return (
         <View style={{flex:1}}>
             <>

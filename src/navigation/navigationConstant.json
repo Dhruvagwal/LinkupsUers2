@@ -7,6 +7,8 @@
     "ServiceProfile":"ServiceProfile",
     "Invitation":"Invitation",
     "Setting":"Setting", 
-    "Library":"Library"
+    "Library":"Library",
+    "Login":"Login",
+    "SignUp":"SignUp"
     
 }
