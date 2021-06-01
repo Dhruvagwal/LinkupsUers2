@@ -7,6 +7,7 @@ import {Text, RowView} from 'styles'
 import color from 'colors' 
 import Login from './Login'
 import BottomBar from 'components/BottomBar'
+import Carousel from 'components/carousel'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import Filter from '../Library/filter'
@@ -89,17 +90,18 @@ const Index = ({route}) => {
                     </View>
                 </RowView>
                 <ScrollView>
+                    <Text style={{marginHorizontal:10}} size={13}>Book Now :</Text>
                     <View style={styles.topContainer} >
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                             {
                                 category.map(item=><Pressable android_ripple={{color:color.dark}} onPress={()=>RootNavigation.navigate(CONSTANT.AddOrder, {category:item})} key={item.id} style={{alignItems:'center', padding:10, width:WIDTH/2-20}}>
                                     <Image source={{uri:item.url}} style={{width:70, height:70}}/>
-                                    <Text size={13}>{item.name}</Text>
+                                    <Text size={13} regular>{item.name}</Text>
                                 </Pressable>)
                             }                                                                                                                                                                                           
+                                                                                                                                                          
                         </ScrollView>
                     </View>
-                    {/* <Carousel/> */}
                     {
                         category.map(res=><View key={res.id} style={styles.middleContainer}>
                             {res.subCategory && <Text size={13} style={{marginHorizontal:20}}>From {res.name}s</Text>}
@@ -166,7 +168,7 @@ const styles = StyleSheet.create({
         borderRadius:10,
         flexDirection:'row',
         justifyContent:'space-around',
-        marginBottom:40,
+        marginBottom:20,
         margin:10
     },
     middleContainer:{

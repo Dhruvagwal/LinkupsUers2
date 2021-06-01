@@ -122,9 +122,9 @@ const Invitation = ({route, navigation}) => {
                         }
                     </View>
                 {/* </ScrollView> */}
-                <Pressable onPress={Save} style={{position:'absolute', bottom:0, width:WIDTH, alignItems:'center', backgroundColor:color.active, padding:20}}>
+                {!loading && <Pressable onPress={Save} style={{position:'absolute', bottom:0, width:WIDTH, alignItems:'center', backgroundColor:color.active, padding:20}}>
                     <Text regular>Submit</Text>                
-                </Pressable>
+                </Pressable>}
             </> :<View>            
                 <LottieView
                     source={require('../../../assets/lottieFiles/loading.json')}

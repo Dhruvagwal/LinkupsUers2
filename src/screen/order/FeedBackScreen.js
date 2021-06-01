@@ -34,7 +34,7 @@ const FeedBack = ({data, provider}) => {
         const FeedBackData = {id:data.user, rating:active, review:text}
         const rating = provider.rating === undefined ? [FeedBackData] : [...provider.rating,FeedBackData ]
         await updateProviderProfile(provider.id,{rating})
-        RootNavigation.navigate(CONSTANT.Home, {load:true})
+        RootNavigation.navigate(CONSTANT.Library, {load:true})
         setLoading(false)
     }
 

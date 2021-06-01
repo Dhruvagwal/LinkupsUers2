@@ -50,9 +50,9 @@ const Time = ({setSelect,state, setState})=>{
     }
     return <View style={{flex: 1,padding:10}}>
         <Calendar date={date} setDate={setDate} time={time} setTime={setTime}/>
-        <Pressable onPress={_onPress} style={styles.Button}>
+        {(time && date) && <Pressable onPress={_onPress} style={styles.Button}>
             <Text>Save</Text>
-        </Pressable>
+        </Pressable>}
     </View>
 }
 
