@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Dimensions, Image, ScrollView, Pressable, BackHandler } from 'react-native'
+import { StyleSheet, View, Dimensions, Image, ScrollView, Pressable, BackHandler, Linking } from 'react-native'
 import { AntDesign, MaterialCommunityIcons, Ionicons, Entypo, MaterialIcons} from '@expo/vector-icons'; 
 
 import {Text, RowView} from 'styles'
@@ -35,10 +35,12 @@ const Review=({data={}})=><View style={{...styles.contentContainer, backgroundCo
     </View>
 </View>
 
-const Point = ({children, last=false, text})=><RowView style={{...styles.Points, borderBottomWidth:last ? 0:2}}>
-    {children}
-    <Text style={{marginLeft:10}}>{text}</Text>
-</RowView>
+const Point = ({children, last=false, text, onPress=()=>{}})=><Pressable onPress={onPress} android_ripple={{color:color.dark}} style={{...styles.Points, borderBottomWidth:last ? 0:2}}>
+    <RowView>
+        {children}
+        <Text style={{marginLeft:10}}>{text}</Text>
+    </RowView>
+</Pressable> 
 
 const ServiceProfile = ({route, navigation}) => {
     const {data, proposal, orderId, proposalData, invitation} = route.params
@@ -110,7 +112,7 @@ const ServiceProfile = ({route, navigation}) => {
                                 <MaterialIcons name="date-range" size={24} color={color.active} />
                             </Point>
                         }
-                        <Point text={`+${data.id}`}>
+                        <Point text={`+${data.id}`} onPress={()=>Linking.openURL(`tel:+${data.id}`)}>
                             <Ionicons name="call" size={24} color={color.active} /> 
                         </Point>
                         <Point text={data.Address}>
@@ -168,7 +170,8 @@ const styles = StyleSheet.create({
     Points:{
         borderBottomWidth:2,
         paddingVertical:10,
-        borderBottomColor:color.lightDark
+        borderBottomColor:color.lightDark,
+        padding:10
     },
     image:{
         height:IMAGE_SIZE, 

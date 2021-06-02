@@ -30,9 +30,6 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalD
                     {!invitation && <Text size={20} regular>₹ {proposalData.price}</Text>}
                     <RowView style={{justifyContent:'space-between'}}>
                         {!invitation && <Text>Deliver: {proposalData.date}</Text>}
-                        <Pressable style={styles.Call}>
-                            <Ionicons name="call" size={24} color={color.white} />
-                        </Pressable>
                     </RowView>
                 </View>
             </RowView>

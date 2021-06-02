@@ -23,7 +23,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
         "backgroundColor": "#1A222F"
-      }
+      },
+      "package": "com.hypervision.user"
     },
     "web": {
       "favicon": "./assets/logo.png"
