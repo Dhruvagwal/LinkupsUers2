@@ -1,8 +1,8 @@
 import axios from 'axios'
  
-const NGROK = "http://6c65b53a1003.ngrok.io"
+const NGROK = "https://us-central1-mainlinkupsadmin.cloudfunctions.net"
 const instances = axios.create({
-    baseURL:`${NGROK}/mainlinkupsadmin/us-central1`
+    baseURL:`${NGROK}`
 })
 
 export default instances

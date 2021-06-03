@@ -51,15 +51,7 @@ const Index = ({route}) => {
         Update()
         setRefreshing(false)
     }
-    const Pay = ()=>{
-        RNUpiPayment.initializePayment({
-            vpa: 'something@bank',  		//your upi address like 12345464896@okhdfcbank
-            payeeName: ' abc',   			// payee name 
-            amount: '1',				//amount
-            transactionNote:'Testing Upi',		//note of transaction
-            transactionRef: 'aasf-332-aoei-fn'	//some refs to aknowledge the transaction
-        },()=>{},()=>{});
-    }
+
     useEffect(() => {
         if(active===ServiceStatus[0]){
             auth && loadData()
@@ -108,7 +100,6 @@ const Index = ({route}) => {
                     {
                         category.map(res=><View key={res.id} style={styles.middleContainer}>
                             {res.subCategory && <Text size={13} style={{marginHorizontal:20}}>From {res.name}s</Text>}
-                                <Button onPress={Pay} title='Pay'/>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                                 {
                                     res.subCategory && res.subCategory.map(item=>

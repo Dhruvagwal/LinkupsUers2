@@ -6,7 +6,8 @@ import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
 
 import {Logout} from 'hooks/useAuth'
- 
+import * as RootNavigation from 'navigation/RootNavigation'
+import CONSTANT from 'navigation/navigationConstant.json'
 import {Text, RowView} from 'styles'
 import color from 'colors'
 import BottomBar from '/components/BottomBar';
@@ -64,7 +65,7 @@ const Index = () => {
                     <Text size={20} style={{alignSelf:'center'}} bold>{profile.name}</Text>
                     <Text style={{alignSelf:'center'}} regular>+91 {profile.id.replace('91','')}</Text>
                     <View style={{flex:1, justifyContent:'center'}}>
-                        <Options>
+                        <Options onPress={RootNavigation.navigate(CONSTANT.Address)}>
                             <FontAwesome name="address-book" size={24} color={color.white} />
                             <Text>  My Address</Text>
                         </Options>

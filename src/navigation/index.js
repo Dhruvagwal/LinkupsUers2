@@ -12,6 +12,7 @@ import InvitationScreen from 'screen/order/Invitation'
 import ServiceProfileScreen from 'screen/profile/ServiceProfile'
 import SettingScreen from 'screen/setting'
 import LibraryScreen from 'screen/Library'
+import AddressScreen from 'screen/setting/Address'
 
 import {navigationRef} from './RootNavigation';
 import {AuthConsumer} from '../context/auth'
@@ -63,6 +64,7 @@ const Index = () => {
                       <Stack.Screen name={CONSTANT.ServiceProfile} component={ServiceProfileScreen}/>
                       <Stack.Screen name={CONSTANT.Setting} component={SettingScreen}/>
                       <Stack.Screen name={CONSTANT.Library} component={LibraryScreen}/>
+                      <Stack.Screen name={CONSTANT.Address} component={AddressScreen}/>
                     </>:
                       <>
                       <Stack.Screen name={CONSTANT.Login} component={LoginScreen}/>
