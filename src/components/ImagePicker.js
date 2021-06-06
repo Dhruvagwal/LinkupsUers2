@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Platform, Pressable } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import upload from 'hooks/upload'
 
-export default function ImageSelector({style,image, setImage, children}) {
-
+export default function ImageSelector({style, children, id, Update, setLoading}) {
   useEffect(() => {
     (async () => {
       if (Platform.OS !== 'web') {
@@ -16,18 +16,16 @@ export default function ImageSelector({style,image, setImage, children}) {
   }, []);
 
   const pickImage = async () => {
+    setLoading(true)
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
-      aspect: [9, 16],
+      aspect: [4, 4],
       quality: 1,
     });
-
-    if (!result.cancelled) {
-    var list = [...image]
-    list.push(result.uri)
-    setImage(list)
-    }
+    await upload(result, id)
+    await Update()
+    setLoading(false)
   };
 
   return (

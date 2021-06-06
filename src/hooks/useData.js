@@ -13,8 +13,10 @@ const getUsersDetails =async ()=>{
 const getCategory = async (CancelToken)=>{
     return instances.get('ReadAll/api/Category/read',{CancelToken})
 }
-const getServiceProvider = async ()=>{
-    return instances.get('ReadAll/api/serviceProvider/read')
+const getServiceProvider = async (category)=>{
+    return instances.post('QuerySearch/api/serviceProvider/search',{
+        category
+    })
 }
 
 const saveOrder = (data)=>{

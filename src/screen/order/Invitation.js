@@ -11,6 +11,7 @@ import {getServiceProvider, saveOrder} from 'hooks/useData'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {DataConsumer} from 'context/data'
+import getDistance from 'geolib/es/getDistance';
 import { sendPushNotification } from 'middlewares/notification'
 
 const HEIGHT = Dimensions.get('screen').height
@@ -64,15 +65,19 @@ const Invitation = ({route, navigation}) => {
     const [loading, setLoading] = useState(true)
     const [invited, setInvited] = useState([])
     const [data, setData] = useState()
+
     const Save=async()=>{
         setLoading(true)
         const id = 'ORD-'+Math.floor(Math.random()*1000000)
+        delete info.categoryData;
         const DATA = {
             invited,
             type:'service',
             user:state.profile.id,
             info:{...info, created:new Date()},
             status:'posted',
+            coord:state.profile.coord,
+            Address:state.profile.Address,
             postedAt: new Date(),
             id
         }
@@ -89,7 +94,16 @@ const Invitation = ({route, navigation}) => {
         setLoading(false)
     }
     useEffect(() => {
-        getServiceProvider().then(({data})=>{setData(data); setLoading(false)})
+        getServiceProvider(info.category).then(({data})=>{
+            const sortedInvite = data.filter(item=>
+                getDistance(
+                    { latitude: state.profile.coord.latitude, longitude: state.profile.coord.longitude },
+                    { latitude: item.coord.latitude, longitude: item.coord.longitude }
+                ) <= info.categoryData.minDistance
+            )
+            setData(sortedInvite); 
+            setLoading(false)
+        })
         const backHandler = BackHandler.addEventListener('hardwareBackPress',navigation.goBack);
         return () => backHandler.remove();
     }, [])

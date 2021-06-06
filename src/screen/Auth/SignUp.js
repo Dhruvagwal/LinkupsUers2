@@ -42,7 +42,6 @@ const SignUp = ({route, navigation}) => {
         const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
         return () => backHandler.remove();
     }, [index])
-
     const _onSubmit = async ()=>{
         const updateData={
             Address:data.address,
@@ -55,7 +54,7 @@ const SignUp = ({route, navigation}) => {
     }
     return (
         <View style={{flex:1, marginTop:25, padding:20}}>
-            {select === screens[0] && <TextInputField label='Enter Name' heading='Your Name' onPress={()=>setSelect(screens[3])} setValue={(name)=>setData({...data, name})}/>}
+            {select === screens[0] && <TextInputField label='Enter Name' heading='Your Name' onPress={()=>setSelect(screens[1])} setValue={(name)=>setData({...data, name})}/>}
             {select === screens[1] && <TextInputField label='Enter Address' onPress={_onSubmit} heading='Your Address' setValue={(address)=>setData({...data, address})} pressLabel='Submit'/>}
         </View>
     )

@@ -85,7 +85,7 @@ const Logout =async()=>{
   await AsyncStorage.clear()
 }
 
-const createUser = async (phone, name, Address)=>{
+const createUser = async ({phone, name, Address})=>{
   const CODE = await countryCode()
   const TRIM_CODE = CODE.replace('+','')
   const token = await registerForPushNotificationsAsync()

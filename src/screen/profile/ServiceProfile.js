@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Dimensions, Image, ScrollView, Pressable, BackHandler, Linking } from 'react-native'
+import { StyleSheet, View, Dimensions, Image, ScrollView, Pressable, BackHandler, Linking, Platform } from 'react-native'
 import { AntDesign, MaterialCommunityIcons, Ionicons, Entypo, MaterialIcons} from '@expo/vector-icons'; 
+import getDistance from 'geolib/es/getDistance';
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
@@ -14,6 +15,17 @@ import CONSTANT from 'navigation/navigationConstant'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
+
+const _openMap = ({latitude, longitude}, label)=>{
+    const scheme = Platform.select({ ios: 'maps:0,0?q=', android: 'geo:0,0?q=' });
+    const latLng = `${latitude},${longitude}`;
+    const url = Platform.select({
+    ios: `${scheme}${label}@${latLng}`,
+    android: `${scheme}${latLng}(${label})`
+    });
+
+    Linking.openURL(url);
+}
 
 const Background = ()=>{
     return <View style={[{flex:1},StyleSheet.absoluteFillObject]}>
@@ -67,6 +79,12 @@ const ServiceProfile = ({route, navigation}) => {
         navigation.navigate(CONSTANT.Library,{load:true})
         setLoading(false)
     }
+    var distance = getDistance(
+        { latitude: state.profile.coord.latitude, longitude: state.profile.coord.longitude },
+        { latitude: data.coord.latitude, longitude: data.coord.longitude }
+    )
+
+    
     return (
         <View style={{flex:1}}>
             <Background/>
@@ -84,10 +102,10 @@ const ServiceProfile = ({route, navigation}) => {
                         </View>
                         <View style={{padding:10}}>
                             <RowView>
-                                <View style={[styles.options, {borderRightWidth:2.5, borderRightColor:color.lightDark}]}>
-                                    <Text size={20} bold>250m <MaterialCommunityIcons name="map-marker-distance" size={24} color={color.active}/></Text>
+                                <Pressable onPress={()=>_openMap(data.coord, state.profile.name)} android_ripple={{color:color.dark}} style={[styles.options, {borderRightWidth:2.5, borderRightColor:color.lightDark}]}>
+                                    <Text size={20} bold>{distance>=1000 ? distance/1000+'km' : distance+'m'} <MaterialCommunityIcons name="map-marker-distance" size={24} color={color.active}/></Text>
                                     <Text>away</Text>
-                                </View>
+                                </Pressable>
                                 <View style={styles.options}>
                                     <Text size={20} bold>4.5 <AntDesign name="star" size={24} color={color.active} /></Text>
                                     <Text>Rating</Text>

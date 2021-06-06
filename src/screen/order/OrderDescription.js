@@ -61,22 +61,22 @@ const OrderDescription = ({route}) => {
         await sendPushNotification(provider.token, notifyData)
         setReview(true)
     }
-
     useEffect(() => {
-        var list = []
         if (data.status===status[0]){
+            var Invitedlist = []
             data.invited>0 && data.invited.map(async item=>{
-                    await getDataById('serviceProvider',item)
-                    .then(({data})=>{
-                        list = [...list, data]
-                        setInvited(list)
-                    })
+                await getDataById('serviceProvider',item)
+                .then(({data})=>{
+                    Invitedlist = [...Invitedlist, data]
+                    setInvited(Invitedlist)
                 })
+            })
+            var Propsallist = []
             data.proposal!== undefined && data.proposal.length > 0 ?data.proposal.map(async item=>{
                 await getDataById('serviceProvider',item.id)
                 .then(({data})=>{
-                    list = [...list, data]
-                    setProposal(list)
+                    Propsallist = [...Propsallist, data]
+                    setProposal(Propsallist)
                 })
                 setLoading(false)
             }) : setLoading(false)

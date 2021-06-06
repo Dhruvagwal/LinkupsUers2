@@ -42,11 +42,11 @@ const SubCategoryListView = ({data={}, setSelect,state, setState})=>{
     </View>
 }
 
-const Time = ({setSelect,state, setState})=>{
+const Time = ({state, category})=>{
     const [date, setDate] =useState()
     const [time, setTime] =useState()
     const _onPress = (item)=>{
-        RootNavigation.navigate(CONSTANT.Invitation,{...state, time, date})
+        RootNavigation.navigate(CONSTANT.Invitation,{...state, time, date, categoryData:category})
     }
     return <View style={{flex: 1,padding:10}}>
         <Calendar date={date} setDate={setDate} time={time} setTime={setTime}/>
@@ -102,12 +102,12 @@ const AddOrder = ({navigation, route}) => {
                     <>
                         {select===stateList[0] && <SubCategoryListView state={state} setSelect={setSelect} setState={setState} data={data}/>}
                         {select===stateList[1] && <Problem state={state} setSelect={setSelect} setState={setState} data={data}/>}
-                        {select===stateList[2] && <Time state={state} setSelect={setSelect} setState={setState}/>}
+                        {select===stateList[2] && <Time category={category} state={state} setSelect={setSelect} setState={setState}/>}
                     </>
                     :
                     <>
                         {select===stateList[0] && <Problem subCategory={subCategory} state={state} setSelect={setSelect} setState={setState} data={data}/>}
-                        {select===stateList[1] && <Time state={state} setSelect={setSelect} setState={setState}/>}
+                        {select===stateList[1] && <Time category={category} state={state} setSelect={setSelect} setState={setState}/>}
                     </>
                 }
             </>
