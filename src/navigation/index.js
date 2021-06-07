@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useRef} from 'react'
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native'
+import {Linking} from 'react-native'
 import {createStackNavigator} from '@react-navigation/stack'
 
 import CONSTANT from './navigationConstant.json'

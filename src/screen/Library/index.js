@@ -43,8 +43,9 @@ const Index = ({route}) => {
 
     const loadData = async (token)=>{
         setRefreshing(true);
-        const postData = await getPost("service", token)
-        setData(postData.data)
+        var postData = await getPost("service", token)
+        postData = postData.data.filter(({status})=>status!=='cancelled')
+        setData(postData)
         if(category.length===0){
             const Category = await getCategory(token)
             setCategory(Category.data)

@@ -55,4 +55,21 @@ const updateUserProfile = async (data)=>{
     return instances.put(`Update/api/users/${LINKUPS_USER_PHONE_NUMBER}`,data)
 }
 
-export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById, updateOrder, updateProviderProfile, updateUserProfile, saveData}
+const Message = ({phone, message})=>{
+    return instances.post('/Message',{phone, message})
+}
+
+export {
+    getUsersDetails, 
+    getCategory, 
+    getServiceProvider, 
+    saveOrder, 
+    getPost, 
+    deleteData, 
+    getDataById, 
+    updateOrder, 
+    updateProviderProfile, 
+    updateUserProfile, 
+    saveData,
+    Message
+}

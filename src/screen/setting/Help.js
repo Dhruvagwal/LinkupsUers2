@@ -51,7 +51,6 @@ const Help = ({navigation}) => {
 
         })
         setSuccess(true)
-        setTimeout(()=>{navigation.goBack()},3000)
         setLoading(false)
     }
 

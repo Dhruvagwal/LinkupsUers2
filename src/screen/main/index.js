@@ -35,7 +35,6 @@ const Index = ({route}) => {
     const ServiceStatus = ['Service', 'Product'] 
     const [active, setActive] = useState(ServiceStatus[0])
     const [category, setCategory] = useState([])
-    const [filter, setFilter] = useState(false)
     const [refreshing, setRefreshing] = React.useState(false);
     const [filterList, setFilterList] = useState([])
 
@@ -58,22 +57,9 @@ const Index = ({route}) => {
         }
     }, [routes])
 
-    const applyFilter =async ()=>{
-        setRefreshing(true);
-        setFilter(false) 
-        const postData = await getPost("service")
-        if(filterList.length!==0){
-            const filter_Result = postData.data.filter(({status})=>filterList.find(item=>item.toLowerCase()===status)) 
-            setData(filter_Result)
-        }else{
-            setData(postData.data)
-        }
-        setRefreshing(false);
-    }
     return (
         <View style={{flex:1}}>
             <Background/>
-            {filter && <Filter filterList={filterList} applyFilter={applyFilter} setFilterList={setFilterList} setFilter={setFilter}/>}
             {/* ======================= */}
             <View style={{height:HEIGHT*.02}}/>
             {/* ======================== */}
