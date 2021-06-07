@@ -22,6 +22,9 @@ const getServiceProvider = async (category)=>{
 const saveOrder = (data)=>{
     return instances.post('DBcreate/api/order/create', data)
 }
+const saveData = (database,data)=>{
+    return instances.post(`DBcreate/api/${database}/create`, data)
+}
 
 const updateOrder = async (data, id)=>{
     return instances.put(`Update/api/order/${id}`,data)
@@ -52,4 +55,4 @@ const updateUserProfile = async (data)=>{
     return instances.put(`Update/api/users/${LINKUPS_USER_PHONE_NUMBER}`,data)
 }
 
-export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById, updateOrder, updateProviderProfile, updateUserProfile}
+export {getUsersDetails, getCategory, getServiceProvider, saveOrder, getPost, deleteData, getDataById, updateOrder, updateProviderProfile, updateUserProfile, saveData}

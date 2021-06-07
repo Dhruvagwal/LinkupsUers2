@@ -6,11 +6,10 @@ import {Text, RowView} from 'styles'
 import color from 'colors'
 import Loading from 'components/Loading' 
 import ServiceProviderListView from 'components/ServiceProviderListView'
-import {deleteData, getDataById} from 'hooks/useData'
 import {DataConsumer} from 'context/data'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
-import {updateOrder} from 'hooks/useData'
+import {updateOrder, getDataById, updateProviderProfile} from 'hooks/useData'
 import moment from 'moment';
 import FeedBackScreen from './FeedBackScreen'
 import { sendPushNotification } from 'middlewares/notification'
@@ -31,19 +30,32 @@ const Point = ({children, last=false,text=''})=><RowView style={{...styles.Point
 
 
 const OrderDescription = ({route}) => {
-    const {data, category, SubCat} = route.params
+    const {id} = route.params
     const {state:{profile}} = DataConsumer()
+    const [data, setData] = useState({})
+    const [SubCat, setSubCat] = useState({})
+    const [category, setCategory] = useState({})
     const [invited, setInvited] = useState([])
     const [proposal, setProposal] = useState([])
     const [review, setReview] = useState(false)
-    const [provider, setProvider] = useState([])
     const [loading, setLoading] = useState(true)
+    const [provider, setProvider] = useState([])
     const [miniLoading, setMiniLoading] = useState(false)
-    const status = ['posted', 'inprogress', 'completed', 'paid']
-
+    const status = ['posted', 'inprogress', 'completed', 'paid','cancelled']
     const Delete =async ()=>{
+        const notifyData = {
+            title:`Order Cancelled`,
+            body:`${profile.name} Cancelled the order. Your connects is refunded to your account`
+        }
         setMiniLoading(true)
-        await deleteData('order',data.id)
+        await updateOrder({status:status[4]}, data.id)
+        await data.proposal.map(async({id})=>{
+            await getDataById('serviceProvider',id).then(async (res)=>{
+                const dataAdd = {id:data.id, time: new Date(), type:'return', amount:SubCat.charge}
+                await updateProviderProfile(id,{wallet:res.data.wallet+SubCat.charge, history:[...res.data.history, dataAdd]})
+                sendPushNotification(res.data.token, notifyData)
+            })
+        })
         RootNavigation.navigate(CONSTANT.Library,{load:true})
         setMiniLoading(false)
     }
@@ -61,35 +73,46 @@ const OrderDescription = ({route}) => {
         await sendPushNotification(provider.token, notifyData)
         setReview(true)
     }
+    
     useEffect(() => {
-        if (data.status===status[0]){
-            var Invitedlist = []
-            data.invited>0 && data.invited.map(async item=>{
-                await getDataById('serviceProvider',item)
-                .then(({data})=>{
-                    Invitedlist = [...Invitedlist, data]
-                    setInvited(Invitedlist)
+        if(loading){
+            getDataById('order',id).then(async (response)=>{
+                setData(response.data)
+                await getDataById('Category', response.data.info.category).then(catRes=>{
+                    setCategory(catRes.data)
+                    const result = catRes.data.subCategory.find(item=>item.id===response.data.info.subCategory)
+                    setSubCat(result)
+                    setLoading(false)
                 })
             })
-            var Propsallist = []
-            data.proposal!== undefined && data.proposal.length > 0 ?data.proposal.map(async item=>{
-                await getDataById('serviceProvider',item.id)
-                .then(({data})=>{
-                    Propsallist = [...Propsallist, data]
-                    setProposal(Propsallist)
-                })
-                setLoading(false)
-            }) : setLoading(false)
         }else{
-            getDataById('serviceProvider',data.provider).then(({data})=>{
-                setProvider(data)
-                setLoading(false)
-            })
+            if (data.status===status[0]){
+                var Invitedlist = []
+                var Propsallist = []
+                data.invited>0 && data.invited.map(async item=>{
+                    await getDataById('serviceProvider',item)
+                    .then(({data})=>{
+                        Invitedlist = [...Invitedlist, data]
+                        setInvited(Invitedlist)
+                    })
+                });
+                if(data.proposal!== undefined && data.proposal.length > 0 ){
+                    data.proposal.map(async item=>{
+                    await getDataById('serviceProvider',item.id)
+                    .then(({data})=>{
+                        Propsallist = [...Propsallist, data]
+                        setProposal(Propsallist)
+                    })
+                })}
+            }else if(data.status!==status[4]){
+                getDataById('serviceProvider',data.provider).then(({data})=>{
+                    setProvider(data)
+                })
+            }
         }
     }, [route.params])
-
     return (
-        <View style={{flex:1}}>          
+        !loading ? <View style={{flex:1}}>          
                 <View style={{height:HEIGHT*.02}}/>
                 <Background/>
                 {review && <FeedBackScreen data={data} provider={provider}/>}
@@ -126,7 +149,7 @@ const OrderDescription = ({route}) => {
                                     <MaterialIcons name="report-problem" size={24} color={color.active} />
                                 </Point>
                             </View>
-                            {!loading?
+                            {data.status !== status[4] &&
                                 <>
                                     {data.status===status[0]?
                                         <>
@@ -149,8 +172,6 @@ const OrderDescription = ({route}) => {
                                         </View>
                                     }
                                 </>
-                                :
-                                <Loading/>
                             }
                         </View>
                         <Text>{'\n'}</Text>
@@ -176,6 +197,8 @@ const OrderDescription = ({route}) => {
                     </Pressable>
                 }
         </View>
+        :
+        <Loading/>
     )
 }
 

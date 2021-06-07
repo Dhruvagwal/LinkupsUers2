@@ -45,6 +45,19 @@ const Index = () => {
         },
       };
 
+    const linking = {
+      prefixes:['https://www.linkups.com','linkups://'],
+      config:{
+        Main:'home',
+        OrderDescription:{
+          path:'order/:id',
+          params:{
+            id:null
+          }
+        }
+
+      }
+    }
     return (<NavigationContainer 
                     ref={navigationRef} 
                     onReady={() => routeNameRef.current = navigationRef.current.getCurrentRoute().name}
@@ -53,6 +66,7 @@ const Index = () => {
                         setName(name)
                     }} 
                     theme={BlackTheme}
+                    linking={linking}
                 >
                 <Stack.Navigator headerMode={false} screenOptions={{ animationEnabled: false }} >
                     {Loading && <Stack.Screen name={CONSTANT.Loading} component={LoadingScreen}/>}

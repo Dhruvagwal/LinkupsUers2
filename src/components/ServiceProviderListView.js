@@ -16,7 +16,7 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalD
         <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile, {data, proposal, orderId, proposalData, invitation})}>
             <RowView style={styles.container}>
                 <Image source={{uri:data.url}} style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:10}}/>
-                <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'75%'}}>
+                {!invitation ? <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'75%'}}>
                     <RowView style={{alignItems:'flex-start'}}>
                         <RowView>
                             <MaterialIcons name="verified" size={24} color={color.blue} />
@@ -27,11 +27,25 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalD
                             <Text> 4.5</Text>
                         </RowView>
                     </RowView>
-                    {!invitation && <Text size={20} regular>₹ {proposalData.price}</Text>}
+                    <Text size={20} regular>₹ {proposalData.price}</Text>
                     <RowView style={{justifyContent:'space-between'}}>
-                        {!invitation && <Text>Deliver: {proposalData.date}</Text>}
+                        <Text>Deliver: {proposalData.date}</Text>
                     </RowView>
+                </View>:
+                <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'75%'}}>
+                    <View style={{alignItems:'flex-start'}}>
+                        <RowView>
+                            <MaterialIcons name="verified" size={24} color={color.blue} />
+                            <Text regular size={18} style={{width:'90%'}} numberOfLines={1}> {data.name}</Text>
+                        </RowView>
+                        <RowView>
+                            <AntDesign name="star" size={24} color={color.active} />  
+                            <Text> 4.5</Text>
+                        </RowView>
+                    </View>
                 </View>
+                }
+                
             </RowView>
         </Pressable>
     )

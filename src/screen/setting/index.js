@@ -1,12 +1,12 @@
 import React,{useState, useEffect} from 'react'
 import { MaterialCommunityIcons, MaterialIcons, Entypo, AntDesign, FontAwesome, Foundation, Feather } from '@expo/vector-icons'; 
-import { StyleSheet, View, Dimensions, Pressable, Image, Linking, BackHandler } from 'react-native'
+import { StyleSheet, View, Dimensions, Pressable, Image, Linking, BackHandler, TextInput, KeyboardAvoidingView } from 'react-native'
 
 import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
 
 import {Logout} from 'hooks/useAuth'
-import {getDataById} from 'hooks/useData'
+import {getDataById, updateUserProfile} from 'hooks/useData'
 import CONSTANT from 'navigation/navigationConstant.json'
 import {Text, RowView} from 'styles'
 import color from 'colors'
@@ -14,6 +14,7 @@ import Loading from 'components/Loading'
 import BottomBar from 'components/BottomBar';
 import ImageViewer from 'components/ImageViewer';
 import ImagePicker from 'components/ImagePicker'
+import useKeyboard from 'hooks/useKeyboard'
 
 const HEIGHT =Dimensions.get('screen').height
 const WIDTH =Dimensions.get('screen').width
@@ -45,6 +46,8 @@ const Index = ({navigation}) => {
     const [isSeller, setIsSeller] = useState(false)
     const [showImage, setShowImage] = useState(false)
     const [loading, setLoading] = useState(true)
+    const [name, setName] = useState(profile.name)
+    const [isEdit, setisEdit] = useState(false)
     
     useEffect(() => {
         getDataById('serviceProvider',profile.id).then(({data})=>{
@@ -61,7 +64,14 @@ const Index = ({navigation}) => {
     const SellerApp = ()=>{
         Linking.openURL('whatsapp://app').catch(()=>Linking.openURL("market://details?id=com.whatsapp"));
     }
-
+    const isOpen = useKeyboard()
+    const _setName = async ()=>{
+        setLoading(true)
+        await updateUserProfile({name})
+        await Update()
+        setisEdit(false)
+        setLoading(false)
+    }
     return (
         !showImage ? <View style={{flex:1}}>
             <BackGround/>
@@ -82,9 +92,21 @@ const Index = ({navigation}) => {
                     </ImagePicker>
                 </View>
                 <View style={{flex:.85, marginTop:20}}>
-                    <Text size={20} style={{alignSelf:'center'}} bold>{profile.name}</Text>
+                    <RowView style={{alignItems:'center',justifyContent:'center'}}>
+                        <TextInput
+                            value={name}
+                            style={styles.TextInput}
+                            onChangeText={setName}
+                            ref ={(data)=>{(data!==null && isEdit) && data.focus()}}
+                            placeholder='Name Here'
+                            editable={isEdit}
+                        />
+                        <Pressable style={{position:'absolute', right:0}} onPress={()=>{setisEdit(res=>!res)}} >
+                            <MaterialIcons name="edit" size={24} color={color.white} />
+                        </Pressable>
+                    </RowView>
                     <Text style={{alignSelf:'center'}} regular>+91 {profile.id.replace('91','')}</Text>
-                    <View style={{flex:1, justifyContent:'center'}}>
+                    {!isOpen && <View style={{flex:1, justifyContent:'center'}}>
                         <Pressable style={{padding:15}} android_ripple={{color:color.dark}} onPress={()=>navigation.navigate(CONSTANT.Address)}>
                             <Options>
                                 <FontAwesome name="address-book" size={24} color={color.white} />
@@ -119,10 +141,15 @@ const Index = ({navigation}) => {
                                 <Text style={{color:color.red}} regular>   Logout</Text>
                             </Options>
                         </Pressable>
-                    </View>
+                    </View>}
                 </View>
             </View>:<Loading/>}
-            <BottomBar/>
+            {isOpen && <KeyboardAvoidingView keyboardVerticalOffset={50}>
+                <Pressable onPress={_setName}  style={styles.button}>
+                    <Text bold>Submit</Text>
+                </Pressable>
+            </KeyboardAvoidingView>}
+            {!isOpen && <BottomBar/>}
         </View>:
         <ImageViewer uri={profile.url} showImage={showImage} setShowImage={setShowImage}/>
     )
@@ -138,5 +165,19 @@ const styles = StyleSheet.create({
         bottom:-10,
         right:10,
         borderRadius:100
+    },
+    TextInput:{
+        marginRight:5, 
+        alignSelf:'center', 
+        fontSize:20, 
+        color:color.white,
+        fontFamily:'Montserrat-Bold',
+        padding:5,
+        textAlign:'center'
+    },
+    button:{
+        backgroundColor:color.active,
+        padding:10,
+        alignItems:'center'
     }
 })

@@ -16,7 +16,7 @@ const ServiceListView = ({data={}, category=[]}) => {
     const result = category.find(item=>item.id===data.info.category)
     const SubCat = result.subCategory.find(item=>item.id===data.info.subCategory)
     return (
-        <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.OrderDescription,{data, category:result, SubCat})} style={styles.container}>
+        <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.OrderDescription,{id:data.id})} style={styles.container}>
                 <RowView style={{justifyContent:'space-between', width:'100%'}}>
                     <Image source={{uri:SubCat.url}} style={{width:70, height:70}}/>
                     <View style={{justifyContent: 'space-between',marginBottom:5, marginLeft:10,height:'80%', width :'95%'}}>

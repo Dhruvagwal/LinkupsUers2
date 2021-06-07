@@ -63,6 +63,12 @@ const GooglePlaceAutoComplete = ({onGet})=>{
       />
 }
 
+const BackGround = ()=>{
+    return <View style={[{flex:1, flexDirection:'row'},StyleSheet.absoluteFillObject]}>
+        <View style={{backgroundColor:color.secondaryDark,height:1000, width:600,transform:[{rotate:'45deg'}, {translateY:-100},{translateX:200}]}}/>
+    </View>
+}
+
 const Address = () => {
     const {state:{profile}, Update} = DataConsumer()
     const [loading, setLoading] = useState(false)
@@ -93,6 +99,7 @@ const Address = () => {
     }
     return (
         !loading ? <View style={styles.container}>
+            <BackGround/>
             {!change? 
             <>
             <View style={{flex:1,justifyContent:'center'}}>
