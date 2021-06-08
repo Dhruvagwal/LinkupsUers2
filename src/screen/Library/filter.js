@@ -21,9 +21,9 @@ const filter = ({setFilter,setFilterList, applyFilter, filterList}) => {
         <ScreenModal style={{padding:0, paddingVertical:20}}>
             {/* =========================== */}
             <View>
-                <Text  style={{marginHorizontal:20,color:color.active}} size={20} bold>FILTER BY</Text>
+                <Text  style={{marginHorizontal:20,color:color.active}} size={15} bold>Filter by</Text>
                 <View style={{marginTop:10}}>
-                    <Text style={{marginHorizontal:20,color:color.blue, marginHorizontal:20}} size={13} bold>STATUS</Text>
+                    <Text style={{marginHorizontal:20,color:color.blue, marginHorizontal:20}} size={13} bold>Status</Text>
                     <View style={{marginTop:10}}>
                         {
                             props.map(item=><CheckBox setFilterList={setFilterList} active={filterList.find(res=>res===item.value)} key={item.value} data={item} />)
@@ -31,10 +31,10 @@ const filter = ({setFilter,setFilterList, applyFilter, filterList}) => {
                     </View>
                 </View>
                 <RowView style={{justifyContent: 'space-between',}}>
-                    <Pressable style={styles.Reset} onPress={()=>{setFilterList([]); applyFilter()}}>
+                    <Pressable style={styles.Reset} onPress={()=>{setFilterList([]); applyFilter(true)}}>
                         <Text bold>Reset</Text>
                     </Pressable>
-                    <Pressable style={styles.Apply} onPress={applyFilter}>
+                    <Pressable style={styles.Apply} onPress={()=>applyFilter(false)}>
                         <Text bold>APPLY</Text>
                     </Pressable>
                 </RowView>

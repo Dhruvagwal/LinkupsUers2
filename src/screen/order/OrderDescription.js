@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react'
-import { StyleSheet, View, Dimensions, Image, ScrollView, TextInput, Pressable } from 'react-native'
+import { StyleSheet, View, Dimensions, Image, ScrollView, Button, Pressable } from 'react-native'
 import { MaterialCommunityIcons, AntDesign, MaterialIcons } from '@expo/vector-icons'; 
 
 import {Text, RowView} from 'styles'
@@ -9,10 +9,11 @@ import ServiceProviderListView from 'components/ServiceProviderListView'
 import {DataConsumer} from 'context/data'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
-import {updateOrder, getDataById, updateProviderProfile} from 'hooks/useData'
+import {updateOrder, getDataById, updateProviderProfile, Message} from 'hooks/useData'
 import moment from 'moment';
 import FeedBackScreen from './FeedBackScreen'
 import { sendPushNotification } from 'middlewares/notification'
+import TimeDiff from 'middlewares/TimeDiff'
 
 
 const HEIGHT= Dimensions.get('screen').height
@@ -23,9 +24,8 @@ const Background = ()=><View style={[{flex:1, alignItems:'stretch',flexDirection
     <View style={{backgroundColor:color.secondaryDark, width:'15%'}}/>
 </View>
 
-const Point = ({children, last=false,text=''})=><RowView style={{...styles.Points, borderBottomWidth:last ? 0:2}}>
-    {children}
-    <Text style={{marginLeft:10}}>{text}</Text>
+const Point = ({last=false,text=''})=><RowView style={{...styles.Points, borderBottomWidth:last ? 0:2}}>
+    <Text style={{marginLeft:10}} regular>{text}</Text>
 </RowView>
 
 
@@ -127,24 +127,15 @@ const OrderDescription = ({route}) => {
                                     <View style={{alignItems:'flex-start', height:100, marginLeft:10, justifyContent:'space-between'}}>
                                         <Text style={{width:WIDTH*.6}} bold numberOfLines={2} adjustsFontSizeToFit>{SubCat.name}</Text>
                                         <Text size={13}>Status:<Text regular style={{textTransform:'capitalize', color:color.active}} size={13}> {data.status}</Text></Text>
-                                        <Text size={13}>{moment(data.postedAt).format('LLL')}</Text>
+                                        <Text size={13}>{TimeDiff(data.postedAt).diff}</Text>
                                     </View>
                                 </RowView>
                             </View>
                             <Text style={{margin:10, marginBottom:0}} size={12}>Info</Text>
                             <View style={{...styles.container, backgroundColor: '#0000',paddingTop:0}}>
-                                <Point text={category.name}>
-                                    <AntDesign name="customerservice" size={24} color={color.active} />
-                                </Point>
-                                <Point text={'Delievery'}>
-                                    <MaterialCommunityIcons name="truck-delivery" size={24} color={color.active} />
-                                </Point>
-                                <Point text={`${moment(data.postedAt).format('LL')} ${data.info.time}`}>
-                                    <MaterialCommunityIcons name="truck-delivery" size={24} color={color.active} />
-                                </Point>
-                                <Point text={data.info.problem} last>
-                                    <MaterialIcons name="report-problem" size={24} color={color.active} />
-                                </Point>
+                                <Point text={category.name}/>
+                                <Point text={`${moment(data.postedAt).format('LL')} \n${data.info.time}`}/>
+                                <Point text={data.info.problem} last/>
                             </View>
                             {data.status !== status[4] &&
                                 <>

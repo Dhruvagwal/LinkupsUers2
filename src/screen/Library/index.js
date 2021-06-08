@@ -9,7 +9,6 @@ import ServiceListView from 'components/ServiceListView'
 import Filter from './filter'
 import TimeDiff from 'middlewares/TimeDiff'
 import BottomBar from 'components/BottomBar'
-
 import {getPost} from 'hooks/useData'
 
 const HEIGHT = Dimensions.get('screen').height
@@ -49,14 +48,15 @@ const Index = ({route}) => {
         }
     }, [routes])
 
-    const applyFilter =async ()=>{
+    const applyFilter =async (reset=false)=>{
         setRefreshing(true);
         setFilter(false) 
         const postData = await getPost("service")
-        if(filterList.length!==0){
+        if(!reset && filterList.length!==0){
             const filter_Result = postData.data.filter(({status})=>filterList.find(item=>item.toLowerCase()===status)) 
             setData(filter_Result)
-        }else{
+        }
+        else{
             setData(postData.data)
         }
         setRefreshing(false);
@@ -76,7 +76,7 @@ const Index = ({route}) => {
                     </View>
                     <RowView>
                         <Pressable onPress={()=>setFilter(true)} style={{padding:5}}>
-                            <Ionicons name="filter-outline" size={30} color={color.white} />
+                            <Ionicons name="filter-outline" size={24} color={color.white} />
                         </Pressable>
                     </RowView>
                 </RowView>

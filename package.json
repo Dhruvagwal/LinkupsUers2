@@ -19,6 +19,7 @@
     "@use-expo/font": "^2.0.0",
     "axios": "^0.21.1",
     "core-js": "^3.11.0",
+    "events": "^3.3.0",
     "expo": "~41.0.1",
     "expo-font": "~9.1.0",
     "expo-image-picker": "^10.1.4",
@@ -29,12 +30,14 @@
     "expo-updates": "~0.5.4",
     "firebase": "8.4.2",
     "geolib": "^3.3.1",
+    "google-translate-api": "^2.3.0",
     "i18next": "^20.2.2",
     "i18next-react-native-language-detector": "^1.0.2",
     "lodash.chunk": "^4.2.0",
     "lottie-react-native": "^4.0.2",
     "moment": "^2.29.1",
     "moti": "^0.10.1",
+    "querystring": "^0.2.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-i18next": "^11.8.15",
@@ -55,7 +58,8 @@
     "react-native-svg-uri": "^1.2.3",
     "react-native-unimodules": "~0.13.3",
     "react-native-upi-pay": "^1.0.8",
-    "react-native-web": "~0.13.12"
+    "react-native-web": "~0.13.12",
+    "vm": "^0.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.0"
