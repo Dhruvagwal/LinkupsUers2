@@ -8,7 +8,7 @@ const STORAGE_KEY_1 = 'LINKUPS_USER_ACCESS_TOKEN'
 const STORAGE_KEY_2 = 'LINKUPS_USER_REFRESH_TOKEN' 
 const STORAGE_KEY_3 = 'LINKUPS_USER_PHONE_NUMBER' 
 
-const signInWithPhoneNumber = async (phone)=>{
+const signInWithPhoneNumber = async (phone, CancelToken)=>{
 
     const CODE = await countryCode()
     const TRIM_CODE = CODE.replace('+','')
@@ -18,11 +18,11 @@ const signInWithPhoneNumber = async (phone)=>{
       countryCode: CODE
     }
 
-    return instances.post('/requestOneTimePassword', otpData).then(()=>true).catch(()=>false)
+    return instances.post('/requestOneTimePassword', otpData, {CancelToken}).then(()=>true).catch(()=>false)
 
 }
 
-const confirmOTP = async (phone, code)=>{
+const confirmOTP = async (phone, code, save=true, CancelToken)=>{
   const CODE = await countryCode()
   const TRIM_CODE = CODE.replace('+','')
 
@@ -30,12 +30,12 @@ const confirmOTP = async (phone, code)=>{
     phone: TRIM_CODE + phone,
     code
   }
-  const result = await instances.post('/verifyOneTimePassword', data).then(async (response)=>{
-
+  const result = await instances.post('/verifyOneTimePassword', data, {CancelToken}).then(async (response)=>{
     await AsyncStorage.setItem(STORAGE_KEY_2, response.data.REFRESH_TOKEN)
     await AsyncStorage.setItem(STORAGE_KEY_1, response.data.ACCESS_TOKEN)
-    await AsyncStorage.setItem(STORAGE_KEY_3, TRIM_CODE+phone)
-
+    if(save){
+      await AsyncStorage.setItem(STORAGE_KEY_3, TRIM_CODE+phone)
+    }
     return true
   }).catch((err)=>{
     return false
@@ -44,7 +44,7 @@ const confirmOTP = async (phone, code)=>{
   return result
 }
 
-const signUpWithPhoneNumber = async (phone)=>{
+const signUpWithPhoneNumber = async (phone, CancelToken)=>{
 
     const CODE = await countryCode()
     const TRIM_CODE = CODE.replace('+','')
@@ -58,8 +58,8 @@ const signUpWithPhoneNumber = async (phone)=>{
       countryCode: CODE
     }
     
-    const result = await instances.post('/createUsers', data).then(()=>true).catch(()=>false)
-    result && await instances.post('/requestOneTimePassword', otpData)
+    const result = await instances.post('/createUsers', data, {CancelToken}).then(()=>true).catch(()=>false)
+    result && await instances.post('/requestOneTimePassword', otpData, {CancelToken})
 
     return result
   
@@ -85,7 +85,7 @@ const Logout =async()=>{
   await AsyncStorage.clear()
 }
 
-const createUser = async ({phone, name, Address})=>{
+const createUser = async ({phone, name, Address}, CancelToken)=>{
   const CODE = await countryCode()
   const TRIM_CODE = CODE.replace('+','')
   const token = await registerForPushNotificationsAsync()
@@ -97,7 +97,7 @@ const createUser = async ({phone, name, Address})=>{
     createdOn: new Date(),
     token,
     url:'https://cdn.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png'
-  }).then(()=>true).catch(()=>false)
+  },{CancelToken}).then(()=>true).catch(()=>false)
 }
 
 export {signInWithPhoneNumber, signUpWithPhoneNumber, confirmOTP, verifyToken, Logout, createUser}

@@ -1,20 +1,16 @@
 import React, {useState, useEffect, useRef} from 'react'
 import { RefreshControl, StyleSheet, Image, View ,Dimensions, Pressable, ScrollView, FlatList, Animated, Modal, Switch } from 'react-native'
-import { MaterialCommunityIcons, MaterialIcons, Entypo, AntDesign, Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons'; 
 import axios from 'axios'
 
 import {Text, RowView} from 'styles'
 import color from 'colors' 
 import ServiceListView from 'components/ServiceListView' 
-import * as RootNavigation from 'navigation/RootNavigation'
-import CONSTANT from 'navigation/navigationConstant'
 import Filter from './filter'
 import TimeDiff from 'middlewares/TimeDiff'
 import BottomBar from 'components/BottomBar'
-import {AuthConsumer} from 'context/auth'
-import {DataConsumer} from 'context/data'
-import {getPost, getCategory, updateUserProfile} from 'hooks/useData'
-import{ registerForPushNotificationsAsync } from 'middlewares/notification'
+
+import {getPost} from 'hooks/useData'
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -29,43 +25,29 @@ const Background = ()=>{
 
 
 const Index = ({route}) => {
-    const {state:{auth}} = AuthConsumer()
     const routes = route.params
-    const {setCat, state:{profile}, Update} = DataConsumer()
-    const ServiceStatus = ['Service', 'Product'] 
-    const [active, setActive] = useState(ServiceStatus[0])
-    const [loading, setLoading] = useState(false)
     const [data, setData] = useState([])
-    const [category, setCategory] = useState([])
     const [filter, setFilter] = useState(false)
     const [refreshing, setRefreshing] = React.useState(false);
     const [filterList, setFilterList] = useState([])
 
     const loadData = async (token)=>{
-        setRefreshing(true);
-        var postData = await getPost("service", token)
-        postData = postData.data.filter(({status})=>status!=='cancelled')
-        setData(postData)
-        if(category.length===0){
-            const Category = await getCategory(token)
-            setCategory(Category.data)
-            setCat(Category.data)
+        try{
+            setRefreshing(true);
+            var postData = await getPost("service", token)
+            postData = postData.data.filter(({status})=>status!=='cancelled')
+            setData(postData)
+            setRefreshing(false)
+        }catch(err){
         }
-        const tokenNot = await registerForPushNotificationsAsync()
-        tokenNot !== profile.token && await updateUserProfile({token:tokenNot})
-        Update()
-        setLoading(false); 
-        setRefreshing(false)
     }
     useEffect(() => {
-        setLoading(true)
-        if(active===ServiceStatus[0]){
-            auth && loadData()
+        let source = axios.CancelToken.source()
+        loadData(source.token)
+        return ()=>{
+            source.cancel()
         }
     }, [routes])
-    const order = async ()=>{
-        auth && RootNavigation.navigate(CONSTANT.AddOrder)
-    }
 
     const applyFilter =async ()=>{
         setRefreshing(true);
@@ -99,7 +81,6 @@ const Index = ({route}) => {
                     </RowView>
                 </RowView>
                 {/* ====================== */}
-                {(active===ServiceStatus[0] && auth) && <>
                     <ScrollView 
                         showsVerticalScrollIndicator={false} 
                         style={{flex:1}} 
@@ -111,22 +92,15 @@ const Index = ({route}) => {
                             />
                         }
                     >
-                        {/* <Carousel/> */}
-                        {loading ?<View style={{height:HEIGHT*.5, alignItems:'center', justifyContent:'center'}}/>
-                        :   <>
-                            { data
-                                .sort((a,b)=>TimeDiff(a.postedAt).minutes-TimeDiff(b.postedAt).minutes)
-                                .map(
-                                    item=>
-                                        <ServiceListView data={item} category={category} status={active} key={item.id}/>
-                                    )
-                            }
-                        </>
+                        { data
+                            .sort((a,b)=>TimeDiff(a.postedAt).minutes-TimeDiff(b.postedAt).minutes)
+                            .map(
+                                item=>
+                                    <ServiceListView data={item} key={item.id}/>
+                                )
                         }
                         <Text>{'\n'}</Text>
                     </ScrollView>
-                    </>
-                }
             </View>
             <BottomBar/>
         </View>

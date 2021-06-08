@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, View, Image, Pressable } from 'react-native'
+import { StyleSheet, View, Image, Pressable, Linking } from 'react-native'
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons'; 
 import moment from 'moment'
 
@@ -32,7 +32,7 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalD
                         <Text>Deliver: {proposalData.date}</Text>
                     </RowView>
                 </View>:
-                <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'75%'}}>
+                <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'70%'}}>
                     <View style={{alignItems:'flex-start'}}>
                         <RowView>
                             <MaterialIcons name="verified" size={24} color={color.blue} />
@@ -42,6 +42,10 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalD
                             <AntDesign name="star" size={24} color={color.active} />  
                             <Text> 4.5</Text>
                         </RowView>
+                        <Pressable style={{backgroundColor:color.active, borderRadius:10, padding:5, marginTop:5, alignSelf:'flex-end', flexDirection:'row', alignItems:'center'}} onPress={()=>Linking.openURL(`tel:+${data.id}`)}>
+                            <Ionicons name="call" size={15} color={color.white}/>
+                            <Text regular> Call</Text>
+                        </Pressable>
                     </View>
                 </View>
                 }

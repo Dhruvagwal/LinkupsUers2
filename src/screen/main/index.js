@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react'
-import { RefreshControl, StyleSheet, Image, View ,Dimensions, Pressable, ScrollView, FlatList, Animated, Modal, Switch, Button } from 'react-native'
-import { MaterialCommunityIcons, MaterialIcons, Entypo, AntDesign, Ionicons} from '@expo/vector-icons'; 
+import { StyleSheet, Image, View ,Dimensions, Pressable, ScrollView} from 'react-native'
 import axios from 'axios'
 
 import {Text, RowView} from 'styles'
@@ -8,13 +7,10 @@ import color from 'colors'
 import BottomBar from 'components/BottomBar'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
-import Filter from '../Library/filter'
 import Loading from 'components/Loading'
-import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
-import {getPost, getCategory, updateUserProfile} from 'hooks/useData'
+import {getCategory, updateUserProfile} from 'hooks/useData'
 import{ registerForPushNotificationsAsync } from 'middlewares/notification'
-import RNUpiPayment from 'react-native-upi-pay';
 
 const HEIGHT = Dimensions.get('screen').height
 const WIDTH = Dimensions.get('screen').width
@@ -29,14 +25,10 @@ const Background = ()=>{
 
 
 const Index = ({route}) => {
-    const {state:{auth}} = AuthConsumer()
     const routes = route.params
     const {setCat, state:{profile}, Update} = DataConsumer()
-    const ServiceStatus = ['Service', 'Product'] 
-    const [active, setActive] = useState(ServiceStatus[0])
     const [category, setCategory] = useState([])
     const [refreshing, setRefreshing] = React.useState(false);
-    const [filterList, setFilterList] = useState([])
 
     const loadData = async (token)=>{
         setRefreshing(true);
@@ -46,14 +38,18 @@ const Index = ({route}) => {
             setCat(Category.data)
         }
         const tokenNot = await registerForPushNotificationsAsync()
-        tokenNot !== profile.token && await updateUserProfile({token:tokenNot})
-        Update()
+        tokenNot !== profile.token && await updateUserProfile({token:tokenNot}, token)
         setRefreshing(false)
+        Update(token)
     }
 
     useEffect(() => {
-        if(active===ServiceStatus[0]){
-            auth && loadData()
+        let source = axios.CancelToken.source()
+        try{
+            loadData(source.token)
+        }catch(err){}
+        return ()=>{
+            source.cancel()
         }
     }, [routes])
 
@@ -71,7 +67,7 @@ const Index = ({route}) => {
                     </View>
                 </RowView>
                 {!refreshing ? <ScrollView>
-                    <Text style={{marginHorizontal:10}} size={13}>Book Now :</Text>
+                    <Text style={{marginHorizontal:20}} size={13}>Book Now :</Text>
                     <View style={styles.topContainer} >
                         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                             {

@@ -4,6 +4,7 @@ import { StyleSheet, View, Dimensions, Pressable, Image, Linking, BackHandler, T
 
 import {AuthConsumer} from 'context/auth'
 import {DataConsumer} from 'context/data'
+import axios from 'axios'
 
 import {Logout} from 'hooks/useAuth'
 import {getDataById, updateUserProfile} from 'hooks/useData'
@@ -46,21 +47,25 @@ const Index = ({navigation}) => {
     const [isSeller, setIsSeller] = useState(false)
     const [showImage, setShowImage] = useState(false)
     const [loading, setLoading] = useState(true)
-    const [name, setName] = useState(profile.name)
+    const [name, setName] = useState()
     const [isEdit, setisEdit] = useState(false)
     
     useEffect(() => {
-        getDataById('serviceProvider',profile.id).then(({data})=>{
-            data!==undefined && setIsSeller(false)
-            setLoading(false)  
-        })
+        let source = axios.CancelToken.source()
+        try{
+            setName(profile.name)
+            getDataById('serviceProvider',profile.id, source.token).then(({data})=>{
+                data!==undefined && setIsSeller(false)
+                setLoading(false)  
+        })}catch(err){}
+        return ()=>{
+            source.cancel()
+        }
     }, [])
-
     const LOGOUT = async ()=>{
         await setAuth(false)
         Logout()
     }
-
     const SellerApp = ()=>{
         Linking.openURL('whatsapp://app').catch(()=>Linking.openURL("market://details?id=com.whatsapp"));
     }
@@ -94,18 +99,19 @@ const Index = ({navigation}) => {
                 <View style={{flex:.85, marginTop:20}}>
                     <RowView style={{alignItems:'center',justifyContent:'center'}}>
                         <TextInput
-                            value={name}
+                            value={name===undefined?profile.name:name}
                             style={styles.TextInput}
                             onChangeText={setName}
                             ref ={(data)=>{(data!==null && isEdit) && data.focus()}}
                             placeholder='Name Here'
+                            placeholderTextColor={color.inActive}
                             editable={isEdit}
                         />
                         <Pressable style={{position:'absolute', right:0}} onPress={()=>{setisEdit(res=>!res)}} >
                             <MaterialIcons name="edit" size={24} color={color.white} />
                         </Pressable>
                     </RowView>
-                    <Text style={{alignSelf:'center'}} regular>+91 {profile.id.replace('91','')}</Text>
+                    <Text style={{alignSelf:'center'}} regular>+91 {profile.id && profile.id.replace('91','')}</Text>
                     {!isOpen && <View style={{flex:1, justifyContent:'center'}}>
                         <Pressable style={{padding:15}} android_ripple={{color:color.dark}} onPress={()=>navigation.navigate(CONSTANT.Address)}>
                             <Options>
@@ -178,6 +184,6 @@ const styles = StyleSheet.create({
     button:{
         backgroundColor:color.active,
         padding:10,
-        alignItems:'center'
+        alignItems:'center',
     }
 })

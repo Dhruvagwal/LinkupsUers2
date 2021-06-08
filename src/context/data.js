@@ -30,8 +30,8 @@ const DataProvider = ({children})=>{
     const [state, dispatch] = useReducer(reducer, INITIAL_STATE);
     const {state:{auth}} =AuthConsumer()
 
-    const Update = async ()=>{
-        const {data}= await getUsersDetails()
+    const Update = async (token)=>{
+        const {data}= await getUsersDetails(token)
         dispatch({type:CONTEXT.UPDATE, profile:data})
     }
     const setCat = async (category)=>{

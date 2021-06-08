@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react'
 import {NavigationContainer, DefaultTheme} from '@react-navigation/native'
-import {Linking} from 'react-native'
 import {createStackNavigator} from '@react-navigation/stack'
+import axios from 'axios'
 
 import CONSTANT from './navigationConstant.json'
 import HomeScreen from 'screen/main'
@@ -29,9 +29,7 @@ const Index = () => {
   useEffect(()=>{
     verifyToken()
       .then(response=>{setAuth(response); setLoading(false)})
-      .catch(err=>setAuth(false))
-
-    return ()=>{}
+      .catch(()=>setAuth(false))
   },[])
     const Stack = createStackNavigator()
     const [Loading, setLoading] = useState(true)

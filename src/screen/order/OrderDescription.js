@@ -110,7 +110,7 @@ const OrderDescription = ({route}) => {
                 })
             }
         }
-    }, [route.params])
+    }, [route.params, loading])
     return (
         !loading ? <View style={{flex:1}}>          
                 <View style={{height:HEIGHT*.02}}/>
@@ -141,9 +141,6 @@ const OrderDescription = ({route}) => {
                                 </Point>
                                 <Point text={`${moment(data.postedAt).format('LL')} ${data.info.time}`}>
                                     <MaterialCommunityIcons name="truck-delivery" size={24} color={color.active} />
-                                </Point>
-                                <Point text={data.id}>
-                                    <AntDesign name="idcard" size={24} color={color.active} />
                                 </Point>
                                 <Point text={data.info.problem} last>
                                     <MaterialIcons name="report-problem" size={24} color={color.active} />

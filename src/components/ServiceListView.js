@@ -4,14 +4,15 @@ import moment from 'moment'
 
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
-
+import {DataConsumer} from 'context/data'
 import {Text, RowView} from 'styles'
 import color from 'colors'
 import TimeDiff from 'middlewares/TimeDiff'
 
 const WIDTH = Dimensions.get('screen').width
 
-const ServiceListView = ({data={}, category=[]}) => {
+const ServiceListView = ({data={}}) => {
+    const {state:{category}} = DataConsumer()
     const diff =TimeDiff(data.postedAt)
     const result = category.find(item=>item.id===data.info.category)
     const SubCat = result.subCategory.find(item=>item.id===data.info.subCategory)

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Dimensions, ScrollView, Image, Pressable, TextInput, BackHandler, Alert} from 'react-native'
+import { StyleSheet, View, Dimensions, ScrollView, Image, Pressable, TextInput, BackHandler, KeyboardAvoidingView} from 'react-native'
 import { MaterialIcons, Entypo, AntDesign, Feather } from '@expo/vector-icons';
 
 import ImagePicker from 'components/ImagePicker'
@@ -10,6 +10,7 @@ import Loading from 'components/Loading'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {getCategory} from 'hooks/useData'
+import useKeyboard from 'hooks/useKeyboard'
 import Calendar from 'components/calendar'
 // import BackHandler from 'hooks/useBackHandler'
 
@@ -48,7 +49,8 @@ const Time = ({state, category})=>{
     const _onPress = (item)=>{
         RootNavigation.navigate(CONSTANT.Invitation,{...state, time, date, categoryData:category})
     }
-    return <View style={{flex: 1,padding:10}}>
+    return <View style={{flex: 1,padding:10, marginTop:10}}>
+        <Text size={13} style={{marginHorizontal:10}} regular>Set Deadline</Text>
         <Calendar date={date} setDate={setDate} time={time} setTime={setTime}/>
         {(time && date) && <Pressable onPress={_onPress} style={styles.Button}>
             <Text>Save</Text>
@@ -57,18 +59,47 @@ const Time = ({state, category})=>{
 }
 
 const Problem = ({setSelect,state, setState, subCategory}) =>{
-    const problem = ['I Don\'t know?', 'Burning Problem', 'Short Circuit']
+    const [text, setText] = useState('')
     const _onPress =async (item)=>{
-        setState({...state, problem:item})
+        setState({...state, problem:item?item:text})
         subCategory === undefined ?  setSelect(stateList[2]) : setSelect(stateList[1])
     }
-    return <View style={{padding:20}}>
-        <Text size={13} regular>Problem Face</Text>
+    const active = useKeyboard()
+    const reason = subCategory.problem? subCategory.problem : subCategory.reason
+    return <View style={{padding:20, flex:1}}>
+        {!active && <>
         {
-            problem.map(item=><Pressable onPress={()=>_onPress(item)} key={item} style={[styles.contentContainer, {padding:20, justifyContent:'center'}]} android_ripple={{color:color.dark}}>
-                <Text>{item}</Text>
+            subCategory.problem?
+            <Text size={13} regular>Problem Face</Text>
+            :
+            <Text size={13} regular>For</Text>
+        }
+        {
+            reason.map(item=><Pressable onPress={()=>_onPress(item)} key={item} style={[styles.contentContainer, {padding:20, justifyContent:'center'}]} android_ripple={{color:color.dark}}>
+                <Text bold>{item}</Text>
             </Pressable>)
         }
+        </>}
+        <View style={[styles.contentContainer, {justifyContent:'center'}]} android_ripple={{color:color.dark}}>
+                <TextInput
+                    placeholder='Edit'
+                    value={text}
+                    onChangeText={setText}
+                    placeholderTextColor={color.white}
+                    style={{
+                        fontFamily:'Montserrat-Bold',
+                        width:'100%',
+                        textAlign:'center',
+                        fontSize:15,
+                        color:color.white,
+                    }}
+                    multiline
+                />
+        </View>
+        {active &&
+                <Pressable onPress={()=>_onPress()} style={styles.button}>
+                    <Text regular>Submit</Text>
+                </Pressable>}
     </View>
 }
 
@@ -135,4 +166,12 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         alignItems:'center',
     },
+    button:{
+        backgroundColor:color.active,
+        padding:10,
+        alignItems:'center',
+        alignSelf:'center',
+        borderRadius:10,
+        marginTop:20
+    }
 })

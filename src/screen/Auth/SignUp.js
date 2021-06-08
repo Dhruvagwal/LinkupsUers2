@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, Image, BackHandler, Pressable } from 'react-native'
+import { StyleSheet, View, Image, BackHandler, Pressable, AsyncStorage } from 'react-native'
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
@@ -9,9 +9,11 @@ import CONSTANT from 'navigation/navigationConstant.json'
 import {getCategory} from 'hooks/useData'
 import {AuthConsumer} from 'context/auth'
 import { MaterialIcons } from '@expo/vector-icons'; 
+import countryCode from 'data/countryCode'
 import {createUser} from 'hooks/useAuth'
 
 const screens = ['name', 'address']
+const STORAGE_KEY_3 = 'LINKUPS_USER_PHONE_NUMBER' 
 
 const TextInputField = ({label='', heading='', onPress = ()=>{}, setValue=()=>{}, pressLabel='Next'})=>{
     return <View style={{flex:1}}>
@@ -28,10 +30,11 @@ const TextInputField = ({label='', heading='', onPress = ()=>{}, setValue=()=>{}
 
 const SignUp = ({route, navigation}) => {
     const [select, setSelect] = useState(screens[0])
-    const [data, setData] = useState({subCategory:[]})
+    const [data, setData] = useState({address:''})
     const {PhoneNumber} = route.params
     const index = screens.indexOf(select)
     const {setAuth} = AuthConsumer()
+    const [loading, setLoading] = useState(false)
 
     useEffect(() => {
         const backAction = () => {
@@ -43,20 +46,28 @@ const SignUp = ({route, navigation}) => {
         return () => backHandler.remove();
     }, [index])
     const _onSubmit = async ()=>{
+        setLoading(true)
+        const CODE = await countryCode()
+        const TRIM_CODE = CODE.replace('+','')
+        const number = await AsyncStorage.getItem(STORAGE_KEY_3)
         const updateData={
             Address:data.address,
             name:data.name,
-            phone: PhoneNumber 
+            phone: number 
 
         }
         await createUser(updateData)
+        await AsyncStorage.setItem(STORAGE_KEY_3, TRIM_CODE+number)
         setAuth(true)
+        setLoading(false)
     }
     return (
-        <View style={{flex:1, marginTop:25, padding:20}}>
-            {select === screens[0] && <TextInputField label='Enter Name' heading='Your Name' onPress={()=>setSelect(screens[1])} setValue={(name)=>setData({...data, name})}/>}
-            {select === screens[1] && <TextInputField label='Enter Address' onPress={_onSubmit} heading='Your Address' setValue={(address)=>setData({...data, address})} pressLabel='Submit'/>}
+        !loading ? <View style={{flex:1, marginTop:25, padding:20}}>
+            {select === screens[0] && <TextInputField pressLabel='Submit' label='Enter Name' heading='Your Name' onPress={_onSubmit} setValue={(name)=>setData({...data, name})}/>}
+            {/* {select === screens[1] && <TextInputField label='Enter Address' onPress={_onSubmit} heading='Your Address' setValue={(address)=>setData({...data, address})} pressLabel='Submit'/>} */}
         </View>
+        :
+        <Loading/>
     )
 }
 
