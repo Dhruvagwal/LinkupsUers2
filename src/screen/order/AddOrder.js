@@ -26,8 +26,9 @@ const Background = ()=>{
     </View>
 }
 
-const SubCategoryListView = ({data={}, setSelect,state, setState})=>{
+const SubCategoryListView = ({data={}, setSelect,state, setState, setSub})=>{
     const _onPress = (item)=>{
+        setSub(item)
         setState(res=>({...res, subCategory:item.id}))
         setSelect(stateList[1])
     }
@@ -106,6 +107,7 @@ const Problem = ({setSelect,state, setState, subCategory}) =>{
 const AddOrder = ({navigation, route}) => {
     const {category, subCategory} = route.params
     const [data, setData] = useState(category)
+    const [sub, setSub] = useState()
     const [select, setSelect] = useState(stateList[0])
     const [state, setState] = useState({category:category.id,subCategory:subCategory !== undefined ? subCategory.id :undefined})
     var index = stateList.indexOf(select)
@@ -117,7 +119,6 @@ const AddOrder = ({navigation, route}) => {
       
         const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
         return () => backHandler.remove();
-
     },[index])
     return (
         <View style={{flex:1}}>
@@ -131,8 +132,8 @@ const AddOrder = ({navigation, route}) => {
                 {
                     subCategory=== undefined ?
                     <>
-                        {select===stateList[0] && <SubCategoryListView state={state} setSelect={setSelect} setState={setState} data={data}/>}
-                        {select===stateList[1] && <Problem state={state} setSelect={setSelect} setState={setState} data={data}/>}
+                        {select===stateList[0] && <SubCategoryListView  setSub={setSub} state={state} setSelect={setSelect} setState={setState} data={data}/>}
+                        {select===stateList[1] && <Problem subCategory={sub} state={state} setSelect={setSelect} setState={setState} data={data}/>}
                         {select===stateList[2] && <Time category={category} state={state} setSelect={setSelect} setState={setState}/>}
                     </>
                     :

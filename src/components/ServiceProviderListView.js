@@ -1,8 +1,7 @@
 import React from 'react'
 import { StyleSheet, View, Image, Pressable, Linking } from 'react-native'
 import { AntDesign, Ionicons, MaterialIcons } from '@expo/vector-icons'; 
-import moment from 'moment'
-
+import DateFormat from 'hooks/DateFormat'
 import {Text, RowView} from 'styles'
 import color from 'colors'
 
@@ -22,14 +21,10 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalD
                             <MaterialIcons name="verified" size={24} color={color.blue} />
                             <Text regular size={18} style={{width:'65%'}} numberOfLines={1}> {data.name}</Text>
                         </RowView>
-                        <RowView>
-                            <AntDesign name="star" size={24} color={color.active} />  
-                            <Text> 4.5</Text>
-                        </RowView>
                     </RowView>
                     <Text size={20} regular>₹ {proposalData.price}</Text>
                     <RowView style={{justifyContent:'space-between'}}>
-                        <Text>Deliver: {proposalData.date}</Text>
+                        <Text>Deliver: {DateFormat(proposalData.date)}</Text>
                     </RowView>
                 </View>:
                 <View style={{paddingHorizontal:10, height:'95%', justifyContent: 'space-between',width:'70%'}}>
@@ -37,10 +32,6 @@ const ServiceProviderListView = ({data={}, proposal=false, orderId='', proposalD
                         <RowView>
                             <MaterialIcons name="verified" size={24} color={color.blue} />
                             <Text regular size={18} style={{width:'90%'}} numberOfLines={1}> {data.name}</Text>
-                        </RowView>
-                        <RowView>
-                            <AntDesign name="star" size={24} color={color.active} />  
-                            <Text> 4.5</Text>
                         </RowView>
                         <Pressable style={{backgroundColor:color.active, borderRadius:10, padding:5, marginTop:5, alignSelf:'flex-end', flexDirection:'row', alignItems:'center'}} onPress={()=>Linking.openURL(`tel:+${data.id}`)}>
                             <Ionicons name="call" size={15} color={color.white}/>

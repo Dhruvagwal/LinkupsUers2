@@ -33,14 +33,10 @@ const InvitationService = ({onPress, data})=>{
     return <Pressable onPress={()=>RootNavigation.navigate(CONSTANT.ServiceProfile, {data, invitation:true})}>        
             <RowView style={styles.container}>
                 <Image source={{uri:data.url}} style={{height:IMAGE_SIZE, width:IMAGE_SIZE}}/>
-                <View style={{overflow:'hidden'}}>
+                <View style={{overflow:'hidden', justifyContent:'space-around', height:'100%', marginLeft:10}}>
                     <RowView>
                         <MaterialIcons name="verified" size={24} color={color.blue} />
                         <Text style={{width:WIDTH/2.3, marginLeft:5}} numberOfLines={1} size={18} bold>{data.name}</Text>
-                    </RowView>
-                    <RowView>
-                        <Entypo name="address" size={24} color={color.active} />
-                        <Text style={{paddingVertical:5}}> 2.5m away</Text>
                     </RowView>
                     {
                         !pressed ? <Pressable onPress={()=>{setPressed(true); onPress(data)}} style={[styles.InviteButton,{backgroundColor: color.active,}]}>
@@ -65,7 +61,6 @@ const Invitation = ({route, navigation}) => {
     const [loading, setLoading] = useState(true)
     const [invited, setInvited] = useState([])
     const [data, setData] = useState()
-
     const Save=async()=>{
         setLoading(true)
         const id = 'ORD-'+Math.floor(Math.random()*1000000)
@@ -88,7 +83,15 @@ const Invitation = ({route, navigation}) => {
             body:`${state.profile.name} has sent you an invitation`,
             data:{id}
         }
-        data.filter(item=>invited.find(res=>res===item.id)).map(async ({token})=>await sendPushNotification(token, notifyData))
+        const notifyDataFeed = {
+            title:`Got An New Feed`,
+            body:`${state.profile.name} give the proposal first hurry up!!`,
+            data:{id}
+        }
+        data.map(({token})=>{
+            sendPushNotification(token, notifyDataFeed)
+        })
+        data.filter(item=>invited.find(res=>res===item.id)).map(async ({token})=>sendPushNotification(token, notifyData))
         setSuccess(true)
         setTimeout(()=>{setSuccess(false);RootNavigation.navigate(CONSTANT.Library,{load:true})}, 3000)
         setLoading(false)
@@ -123,7 +126,7 @@ const Invitation = ({route, navigation}) => {
                     <Text size={20} bold>Linkups</Text>
                     <Text size={13}>Invitations</Text>
                 </View>
-                {/* <ScrollView showsVerticalScrollIndicator={false}> */}
+                <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={{margin:20, marginTop:0, flex:1}}>
                         {!loading ? <>
                             {
@@ -134,7 +137,7 @@ const Invitation = ({route, navigation}) => {
                         <Loading/>
                         }
                     </View>
-                {/* </ScrollView> */}
+                </ScrollView>
                 {!loading && <Pressable onPress={Save} style={{position:'absolute', bottom:0, width:WIDTH, alignItems:'center', backgroundColor:color.active, padding:20}}>
                     <Text regular>Submit</Text>                
                 </Pressable>}
@@ -160,9 +163,8 @@ export default Invitation
 const styles = StyleSheet.create({
     container:{
         backgroundColor:'rgba(34, 42, 56,0.8)',
-        padding:10,
         marginTop:10,
-        justifyContent:'space-evenly'
+        height:IMAGE_SIZE
     },
     loading:{
         width:WIDTH,

@@ -68,7 +68,7 @@ const Index = ({route}) => {
             {/* ======================= */}
             <View style={{height:HEIGHT*.02}}/>
             {/* ======================== */}
-            <View style={{flex:1, padding:20}}>
+            <View style={{flex:1, padding:20, paddingBottom:0}}>
                 <RowView style={{marginBottom:20, justifyContent:'space-between'}}>
                     <View>
                         <Text size={20} bold>Linkups</Text>

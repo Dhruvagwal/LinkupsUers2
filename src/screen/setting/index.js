@@ -91,7 +91,7 @@ const Index = ({navigation}) => {
                 <View style={{alignItems:'center', alignSelf:'center'}}>
                     <Pressable onPress={()=>setShowImage(true)}>
                         <Image source={{uri:profile.url}} style={{height:IMAGE_SIZE, width:IMAGE_SIZE, borderRadius:IMAGE_SIZE}}/>
-                    </Pressable>
+                    </Pressable>-
                     <ImagePicker Update={Update} setLoading={setLoading} id={profile.id} style={styles.camera}>
                         <Feather name="camera" size={24} color={color.white} />
                     </ImagePicker>
@@ -123,7 +123,7 @@ const Index = ({navigation}) => {
                         <Pressable style={{padding:15}} onPress={SellerApp} android_ripple={{color:color.dark}}>
                             <Options>
                                 <AntDesign name="customerservice" size={24} color={color.white} />
-                                {!isSeller ? <Text>  Become a Seller</Text>: <Text>  Go To Seller App</Text>}
+                                <Text>  +Linkups Provider</Text>
                             </Options>
                         </Pressable>
 

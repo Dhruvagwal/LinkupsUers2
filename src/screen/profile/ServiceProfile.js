@@ -8,6 +8,7 @@ import color from 'colors'
 import moment from 'moment';
 import Loading from 'components/Loading'
 import { updateOrder } from 'hooks/useData'
+import DateFormat from 'hooks/DateFormat'
 import {DataConsumer} from 'context/data'
 import { sendPushNotification } from 'middlewares/notification'
 import * as RootNavigation from 'navigation/RootNavigation'
@@ -50,7 +51,7 @@ const Review=({data={}})=><View style={{...styles.contentContainer, backgroundCo
 const Point = ({children, last=false, text, onPress=()=>{}})=><Pressable onPress={onPress} android_ripple={{color:color.dark}} style={{...styles.Points, borderBottomWidth:last ? 0:2}}>
     <RowView>
         {children}
-        <Text style={{marginLeft:10}}>{text}</Text>
+        <Text regular style={{marginLeft:10}}>{text}</Text>
     </RowView>
 </Pressable> 
 
@@ -58,10 +59,18 @@ const ServiceProfile = ({route, navigation}) => {
     const {data, proposal, orderId, proposalData, invitation} = route.params
     const [loading, setLoading] = useState(false)
     const [pro, setPro] = useState('')
+    const [rating, setRating] = useState(0)
     const {state, setLoad} = DataConsumer()
     useEffect(() => {
+        var rate = 0
         const result = state.category.find(item=>item.id === data.category)
-        setPro(result.name)        
+        setPro(result.name)  
+        if(data.rating){
+            data.rating.map(item=>{
+                rate = item.rating + rate
+            })    
+            setRating(rate*1.2/data.rating.length)
+        } 
     }, [])
     const accept = async ()=>{
         setLoading(true)
@@ -93,10 +102,10 @@ const ServiceProfile = ({route, navigation}) => {
                 <View style={{padding:20}}>
                     <Image source={{uri:data.url}} style={styles.image}/>
                     <View style={styles.container}>
-                        <View style={{alignSelf:'center', marginBottom:10}}>
+                        <View style={{alignSelf:'center', marginBottom:10, alignItems:'center'}}>
                             <Text size={20} bold>{data.name}</Text>
                             <RowView style={{alignSelf: 'center',}}>
-                                <MaterialIcons name="verified" size={24} color={color.blue} />
+                                {(data.rating && data.history.length>100)&& <MaterialIcons name="verified" size={24} color={color.blue} />}
                                 <Text> {pro}</Text>
                             </RowView>
                         </View>
@@ -107,7 +116,7 @@ const ServiceProfile = ({route, navigation}) => {
                                     <Text>away</Text>
                                 </Pressable>
                                 <View style={styles.options}>
-                                    <Text size={20} bold>4.5 <AntDesign name="star" size={24} color={color.active} /></Text>
+                                    {data.rating ?<Text size={20} bold>{rating} <AntDesign name="star" size={24} color={color.active} /></Text>: <Text size={20} bold>No</Text>}
                                     <Text>Rating</Text>
                                 </View>
                             </RowView>
@@ -118,26 +127,26 @@ const ServiceProfile = ({route, navigation}) => {
                     <Text size={12} style={{margin:10, marginBottom:-5}}>Details</Text>
                     <View style={styles.contentContainer}>
                         {!invitation && <Point>
-                            <Entypo name="price-tag" size={24} color={color.active} />
+                            <Entypo name="price-tag" size={20} color={color.blue} />
                             <RowView style={{marginLeft:10}}>
-                                <Text>Price:</Text>
-                                <Text size={20} regular> {`₹ ${proposalData.price}`}</Text>
+                                <Text regular>Price:</Text>
+                                <Text size={20} bold> {`₹ ${proposalData.price}`}</Text>
                             </RowView>
                         </Point>}
                         {
                             !invitation && 
-                            <Point text={proposalData.date}>
-                                <MaterialIcons name="date-range" size={24} color={color.active} />
+                            <Point text={`${DateFormat(proposalData.date)}\n${proposalData.time}`}>
+                                <MaterialIcons name="date-range" size={20} color={color.blue} />
                             </Point>
                         }
                         <Point text={`+${data.id}`} onPress={()=>Linking.openURL(`tel:+${data.id}`)}>
-                            <Ionicons name="call" size={24} color={color.active} /> 
+                            <Ionicons name="call" size={20} color={color.blue} /> 
                         </Point>
-                        <Point text={data.Address}>
-                            <Entypo name="address" size={24} color={color.active} />
+                        <Point text={data.Address} onPress={()=>_openMap(data.coord, state.profile.name)}>
+                            <Entypo name="address" size={20} color={color.blue} />
                         </Point>
                         <Point last text={`Since ${moment(data.createdOn).format('DD-MM-YYYY')}`}>
-                            <Entypo name="flag" size={24} color={color.active}/>
+                            <Entypo name="flag" size={20} color={color.blue}/>
                         </Point>
                     </View>
 

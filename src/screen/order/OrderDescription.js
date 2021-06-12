@@ -7,6 +7,7 @@ import color from 'colors'
 import Loading from 'components/Loading' 
 import ServiceProviderListView from 'components/ServiceProviderListView'
 import {DataConsumer} from 'context/data'
+import DateFormat from 'hooks/DateFormat'
 import * as RootNavigation from 'navigation/RootNavigation'
 import CONSTANT from 'navigation/navigationConstant'
 import {updateOrder, getDataById, updateProviderProfile, Message} from 'hooks/useData'
@@ -49,7 +50,7 @@ const OrderDescription = ({route}) => {
         }
         setMiniLoading(true)
         await updateOrder({status:status[4]}, data.id)
-        await data.proposal.map(async({id})=>{
+        data.proposal && await data.proposal.map(async({id})=>{
             await getDataById('serviceProvider',id).then(async (res)=>{
                 const dataAdd = {id:data.id, time: new Date(), type:'return', amount:SubCat.charge}
                 await updateProviderProfile(id,{wallet:res.data.wallet+SubCat.charge, history:[...res.data.history, dataAdd]})
@@ -134,8 +135,11 @@ const OrderDescription = ({route}) => {
                             <Text style={{margin:10, marginBottom:0}} size={12}>Info</Text>
                             <View style={{...styles.container, backgroundColor: '#0000',paddingTop:0}}>
                                 <Point text={category.name}/>
-                                <Point text={`${moment(data.postedAt).format('LL')} \n${data.info.time}`}/>
-                                <Point text={data.info.problem} last/>
+                                <Point text={data.info.problem}/>
+                                {(data.status===status[1] || data.status===status[2] || data.status===status[3]) && <Point text={'Starts on: '+moment(data.startsOn).format('LLL')}/>}
+                                {data.status===status[0] && <Point text={`${moment(data.postedAt).format('LL')} \n${data.info.time}`} />}
+                                {(data.status===status[2] || data.status===status[3])&& <Point text={`Ends on: ${moment(data.endsOn).format('LLL')}`} />}
+                                {(data.status===status[3])&& <Point text={`Paid on: ${moment(data.paidOn).format('LLL')}`} />}
                             </View>
                             {data.status !== status[4] &&
                                 <>
@@ -167,8 +171,7 @@ const OrderDescription = ({route}) => {
                             <>
                                 {data.status===status[0] && <Pressable onPress={Delete}>
                                     <RowView style={{...styles.container, opacity:1, padding:20, alignItems:'center', justifyContent:'center'}}>
-                                    <MaterialCommunityIcons name="delete" size={24} color={color.red}/>
-                                        <Text style={{color:color.red}} regular>Delete</Text>
+                                        <Text style={{color:color.red}} regular>Cancel</Text>
                                     </RowView>
                                 </Pressable>}
                             </>

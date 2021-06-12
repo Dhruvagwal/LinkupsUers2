@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react'
-import { StyleSheet, View, BackHandler } from 'react-native'
+import { StyleSheet, View, BackHandler, TextInput } from 'react-native'
 import OTPInputView from '@twotalltotems/react-native-otp-input'
 
 import {Text, RowView} from 'styles'
 import color from 'colors'
-import TextInput from 'components/TextInput'
+// import TextInput from 'components/TextInput'
 import Loading from 'components/Loading'
 import { Pressable, AsyncStorage } from 'react-native'
 import * as RootNavigation from 'navigation/RootNavigation'
@@ -64,7 +64,7 @@ const OTPScreen = ({setPhoneNumber=()=>{}, setOTPScreen=()=>{}, type='LOGIN',Pho
                     codeInputHighlightStyle={styles.underlineStyleHighLighted}
                     onCodeFilled = {confirm}
                 />
-                    {/* <TextInput label='Enter OTP' setValue={setOTP} keyboardType='number-pad'/> */}
+                    {/* <TextInput placeholder='otp' onChangeText={confirm} keyboardType='number-pad'/> */}
                     <RowView style={{justifyContent:'space-between', marginTop:10}}>
                         <Text>00:{time>10 ? time : `0${time}`}</Text>
                         <Pressable disabled={time!==0} android_ripple={{color:color.lightDark}} onPress={()=>{signInWithPhoneNumber(PhoneNumber), setTime(60)}}>

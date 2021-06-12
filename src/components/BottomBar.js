@@ -29,14 +29,14 @@ export default BottomBar
 
 const styles = StyleSheet.create({
     container:{
-        backgroundColor: '#0000',
+        backgroundColor: 'rgba(26, 34, 47,0.8)',
         position: 'absolute',
         bottom:0,
         width:'100%',
-        height:50,
+        height:70,
         flexDirection:'row',
         justifyContent:'space-around',
-        alignItems:'flex-end'
+        alignItems:'flex-end',
     },
     option:{
         flexDirection:'row',
